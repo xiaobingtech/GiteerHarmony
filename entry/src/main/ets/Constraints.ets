@@ -1,5 +1,5 @@
 export class Constraints {
-  static client_id = '6c2acdc7e2348399036735675b029171c5fafd7ffcbe682e5cd697e1d250e6e1'
-  static client_secret = 'a6ce86609de6851d0158b8499d4ba7cee4cfa839914403ca4fcb27cfd8094d50'
+  static client_id = '5f4d3edee501c44a739dd7756573e84c6b231b393a247ebf769b3109d0ce8421'
+  static client_secret = '8afcb22c6be0be091160f5d75c15c0b73670629417aa3d0263a35614761a0d6a'
   static redirect_uri = 'giteer://oauth-callback'
 }
