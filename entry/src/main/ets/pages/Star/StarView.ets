@@ -9,26 +9,28 @@ export struct StarView{
 
   @State repos: Array<StarResponse> = []
   @State prev_id: number = 0
+  @State progress: number = 50
 
   build() {
     Row(){
       Column(){
-        Text('Star')
         if (this.repos.length > 0) {
           List(){
             ForEach(this.repos, (item: StarResponse) => {
               StarItem({ item: item })
+                .onClick(() => {
+
+                })
             }, (item: StarResponse) => item.name)
           }
         }else{
-          Text('暂无数据')
+          Text('加载中...')
         }
       }
       .width('100%')
       .height('100%')
     }
     .height('100%')
-    .backgroundColor(0xF1F3F5)
     .onAppear(() => {
       this.getStars()
     })
@@ -48,8 +50,10 @@ export struct StarView{
         let result: Array<StarResponse> = JSON.parse(jsonStr)
         this.repos = result
       }
+      this.progress = 100
     }).catch((err: BusinessError) => {
       console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
+      this.progress = 100
     })
   }
 }
