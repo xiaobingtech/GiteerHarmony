@@ -46,9 +46,9 @@ struct WebPage {
             }).catch((err: BusinessError) => {
               console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
             })
-            return false
+            return true
           }
-          return true
+          return false
         })
         .width('100%')
         .height('100%')
