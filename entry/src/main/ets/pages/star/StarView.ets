@@ -3,6 +3,8 @@ import { StarItem } from './StarItem'
 import { rcp } from '@kit.RemoteCommunicationKit'
 import { preferences } from '@kit.ArkData'
 import { BusinessError } from '@kit.BasicServicesKit'
+import { router } from '@kit.ArkUI'
+
 
 @Component
 export struct StarView{
@@ -19,10 +21,15 @@ export struct StarView{
             ForEach(this.repos, (item: StarResponse) => {
               StarItem({ item: item })
                 .onClick(() => {
-
+                  router.pushUrl({
+                    url: '/pages/repo/RepoPage'
+                  })
                 })
             }, (item: StarResponse) => item.name)
           }
+          .scrollBar(BarState.Off)
+          .divider({ strokeWidth: 1, color: 0xFAFAFA, startMargin: 0, endMargin: 0 }) // 每行之间的分界线
+          .edgeEffect(EdgeEffect.Spring) // 边缘效果设置为Spring
         }else{
           Text('加载中...')
         }
@@ -30,6 +37,7 @@ export struct StarView{
       .width('100%')
       .height('100%')
     }
+    .width('100%')
     .height('100%')
     .onAppear(() => {
       this.getStars()

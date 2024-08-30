@@ -22,7 +22,7 @@ struct WelcomePage {
     .onAppear(() => {
       let data = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
       let access_token = data.getSync('access_token', '')
-      if (access_token != null) {
+      if (access_token != '') {
         router.replaceUrl({
             url: 'pages/TabPage'
           })
