@@ -2,6 +2,7 @@
   "src": [
     "pages/Index",
     "pages/WebPage",
-    "pages/TabPage"
+    "pages/TabPage",
+    "pages/WelcomePage"
   ]
 }

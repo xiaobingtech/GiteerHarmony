@@ -1,5 +1,7 @@
 import { preferences } from '@kit.ArkData'
 import { router } from '@kit.ArkUI'
+import { EventView } from './event/EventView'
+import { StarView } from './Star/StarView'
 
 @Entry
 @Component
@@ -21,14 +23,14 @@ struct TabPage {
     }) {
       TabContent() {
         NavDestination() {
-          Text('动态')
+          EventView()
         }
       }
       .tabBar(this.tabBarBuilder(0, '动态', $r('app.media.event'), $r('app.media.event')))
 
       TabContent() {
         NavDestination() {
-          Text('星标')
+          StarView()
         }
       }
       .tabBar(this.tabBarBuilder(1, 'Star', $r('app.media.star'), $r('app.media.star')))
@@ -72,14 +74,7 @@ struct TabPage {
     .onAppear(() => {
       let data = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
       let val = data?.getSync('access_token', '')
-      console.log('token=', val)
-      if (val == '') {
-        router.replaceUrl({
-          url: 'pages/Index'
-        })
-      } else {
-        //刷新Token
-      }
+      //刷新Token
     })
   }
 }
