@@ -6,7 +6,6 @@ import { BusinessError } from '@kit.BasicServicesKit'
 import { router } from '@kit.ArkUI'
 import { DerivedNavPathStack } from '../../common/DerivedNavPathStack'
 import { RepoPage } from '../repo/RepoPage'
-import { it } from '@ohos/hypium'
 
 
 @Component
@@ -36,7 +35,11 @@ export struct StarView{
               ForEach(this.repos, (item: StarResponse) => {
                 StarItem({ item: item })
                   .onClick(() => {
-                    this.derivedStack.pushPath({name: 'RepoPage', param: item})
+                    if (this.derivedStack.size() == 0) {
+                      this.derivedStack.pushPath({name: 'RepoPage', param: item})
+                    }else{
+                      this.derivedStack.replacePath({name: 'RepoPage', param: item})
+                    }
                   })
               }, (item: StarResponse) => item.name)
             }

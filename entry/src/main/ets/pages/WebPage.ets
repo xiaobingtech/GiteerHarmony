@@ -6,32 +6,46 @@ import { LoginResponse } from '../model/LoginResponse';
 import { preferences } from '@kit.ArkData'
 import { BusinessError } from '@kit.BasicServicesKit';
 import { UserResponse } from '../model/UserResponse';
+import { DerivedNavPathStack } from '../common/DerivedNavPathStack';
 
 @Entry
 @Component
-struct WebPage {
+export struct WebPage {
+  @State url: string = ''
+  @State title: string = ''
   controller: webview.WebviewController = new webview.WebviewController()
 
+  derivedStack: DerivedNavPathStack = new DerivedNavPathStack();
+
   build() {
-    Column(){
-      Web({
-        src: `https://gitee.com/oauth/authorize?client_id=${Constraints.client_id}&redirect_uri=${Constraints.redirect_uri}&response_type=code`,
-        controller:this.controller
-      })
-        .onOverrideUrlLoading((request: WebResourceRequest) => {
-          console.log('当前加载的URL:', request.getRequestUrl())
-          if (request.getRequestUrl().startsWith(Constraints.redirect_uri)) {
-            let code = request.getRequestUrl().split('code=').pop()
-            this.handleCode(code)
-            return true
-          }
-          return false
+    NavDestination(){
+      Column(){
+        Web({
+          src: this.url,
+          controller:this.controller
         })
-        .width('100%')
-        .height('100%')
+          .onOverrideUrlLoading((request: WebResourceRequest) => {
+            console.log('当前加载的URL:', request.getRequestUrl())
+            if (request.getRequestUrl().startsWith(Constraints.redirect_uri)) {
+              let code = request.getRequestUrl().split('code=').pop()
+              this.handleCode(code)
+              return true
+            }
+            return false
+          })
+          .width('100%')
+          .height('100%')
+          .onTitleReceive((data) => {
+            this.title = data.title
+          })
+      }
+      .height('100%')
+      .width('100%')
     }
-    .height('100%')
-    .width('100%')
+    .onReady((context) => {
+      this.url = context.pathInfo.param as string
+    })
+    .title(this.title)
   }
 
   handleCode(code: string|undefined) {

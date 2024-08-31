@@ -1,7 +1,8 @@
 import { UserResponse } from './UserResponse'
 
-export interface StarResponse {
-  name: string,
-  description: string
-  owner: UserResponse
+export class StarResponse {
+  name: string = ''
+  description: string = ''
+  owner: UserResponse = new UserResponse()
+  updated_at: string = ''
 }

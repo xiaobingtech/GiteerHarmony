@@ -4,7 +4,7 @@ import { StarResponse } from '../../model/StarResponse';
 @Entry
 @Component
 export struct RepoPage {
-  @State item: StarResponse = StarResponse()
+  @State item: StarResponse = new StarResponse()
 
   derivedStack: DerivedNavPathStack = new DerivedNavPathStack();
 
@@ -16,9 +16,8 @@ export struct RepoPage {
           .borderRadius(25)
         Column({space: 5}){
           Text(this.item.name)
-            .maxLines(2)
           Text(this.item.description)
-            .maxLines(2)
+          Text(this.item.updated_at)
         }
         .alignItems(HorizontalAlign.Start)
         .width('calc(100% - 70vp)')
@@ -27,7 +26,8 @@ export struct RepoPage {
       .padding(15)
     }
     .onReady((context) => {
-      item = context.pathInfo.param
+      this.item = context.pathInfo.param as StarResponse
     })
+    .title('仓库')
   }
 }

@@ -12,6 +12,7 @@ export struct TrendSubItem{
         Text(this.item.name)
         Text(this.item.description)
           .maxLines(2)
+        Text(this.item.updated_at)
       }
       .alignItems(HorizontalAlign.Start)
       .width('calc(100% - 70vp)')
