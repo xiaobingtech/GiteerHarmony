@@ -15,13 +15,13 @@ struct TabPage {
   @Builder
   tabBarBuilder(index: number, title: string, img: ResourceStr, sel_img: ResourceStr) {
     if (this.currentBreakpoint !== 'md' ) {
-      Column(){
+      Column({space: 5}){
         Image(index == this.selectIndex ? sel_img : img)
           .width(30)
         Text(title).fontColor(index == this.selectIndex ? Color.Red : Color.Black)
       }
     }else{
-      Row(){
+      Row({space: 5}){
         Image(index == this.selectIndex ? sel_img : img)
           .width(30)
         Text(title).fontColor(index == this.selectIndex ? Color.Red : Color.Black)
@@ -33,42 +33,22 @@ struct TabPage {
   build() {
     Tabs({ barPosition: this.currentBreakpoint === "lg" ? BarPosition.Start : BarPosition.End }) {
       TabContent() {
-        NavDestination() {
-          Navigation(){
-            EventView()
-          }
-          .title('动态')
-        }
+        EventView()
       }
       .tabBar(this.tabBarBuilder(0, '动态', $r('app.media.event'), $r('app.media.event')))
 
       TabContent() {
-        NavDestination() {
-          Navigation(){
-            StarView()
-          }
-          .title('Star')
-        }
+        StarView()
       }
       .tabBar(this.tabBarBuilder(1, 'Star', $r('app.media.star'), $r('app.media.star')))
 
       TabContent() {
-        NavDestination() {
-          Navigation(){
-            SearchView()
-          }
-          .title('搜索')
-        }
+        SearchView()
       }
       .tabBar(this.tabBarBuilder(2, '搜索', $r('app.media.search'), $r('app.media.search')))
 
       TabContent() {
-        NavDestination() {
-          Navigation(){
-            TrendView()
-          }
-          .title('趋势')
-        }
+        TrendView()
       }
       .tabBar(this.tabBarBuilder(3, '趋势', $r('app.media.star'), $r('app.media.star')))
 

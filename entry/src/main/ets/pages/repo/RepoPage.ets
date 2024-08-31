@@ -1,20 +1,33 @@
+import { DerivedNavPathStack } from '../../common/DerivedNavPathStack';
+import { StarResponse } from '../../model/StarResponse';
+
 @Entry
 @Component
-struct RepoPage {
-  @State message: string = 'Hello World';
+export struct RepoPage {
+  @State item: StarResponse = StarResponse()
+
+  derivedStack: DerivedNavPathStack = new DerivedNavPathStack();
 
   build() {
-    RelativeContainer() {
-      Text(this.message)
-        .id('RepoPageHelloWorld')
-        .fontSize(50)
-        .fontWeight(FontWeight.Bold)
-        .alignRules({
-          center: { anchor: '__container__', align: VerticalAlign.Center },
-          middle: { anchor: '__container__', align: HorizontalAlign.Center }
-        })
+    NavDestination(){
+      Row({space: 15}){
+        Image(this.item.owner.avatar_url)
+          .width(50)
+          .borderRadius(25)
+        Column({space: 5}){
+          Text(this.item.name)
+            .maxLines(2)
+          Text(this.item.description)
+            .maxLines(2)
+        }
+        .alignItems(HorizontalAlign.Start)
+        .width('calc(100% - 70vp)')
+      }
+      .alignItems(VerticalAlign.Top)
+      .padding(15)
     }
-    .height('100%')
-    .width('100%')
+    .onReady((context) => {
+      item = context.pathInfo.param
+    })
   }
 }

@@ -4,6 +4,9 @@ import { rcp } from '@kit.RemoteCommunicationKit'
 import { preferences } from '@kit.ArkData'
 import { BusinessError } from '@kit.BasicServicesKit'
 import { router } from '@kit.ArkUI'
+import { DerivedNavPathStack } from '../../common/DerivedNavPathStack'
+import { RepoPage } from '../repo/RepoPage'
+import { it } from '@ohos/hypium'
 
 
 @Component
@@ -13,32 +16,45 @@ export struct StarView{
   @State prev_id: number = 0
   @State progress: number = 50
 
+  derivedStack: DerivedNavPathStack = new DerivedNavPathStack();
+
+  aboutToAppear(): void {
+    this.derivedStack.setId('star stack');
+  }
+
+  @Builder
+  pageMap(name: string) {
+    RepoPage()
+  }
+
   build() {
-    Row(){
-      Column(){
-        if (this.repos.length > 0) {
-          List(){
-            ForEach(this.repos, (item: StarResponse) => {
-              StarItem({ item: item })
-                .onClick(() => {
-                  router.pushUrl({
-                    url: '/pages/repo/RepoPage'
+    Navigation(this.derivedStack){
+      Row(){
+        Column(){
+          if (this.repos.length > 0) {
+            List(){
+              ForEach(this.repos, (item: StarResponse) => {
+                StarItem({ item: item })
+                  .onClick(() => {
+                    this.derivedStack.pushPath({name: 'RepoPage', param: item})
                   })
-                })
-            }, (item: StarResponse) => item.name)
+              }, (item: StarResponse) => item.name)
+            }
+            .scrollBar(BarState.Off)
+            .divider({ strokeWidth: 1, color: 0xFAFAFA, startMargin: 0, endMargin: 0 }) // 每行之间的分界线
+            .edgeEffect(EdgeEffect.Spring) // 边缘效果设置为Spring
+          }else{
+            Text('加载中...')
           }
-          .scrollBar(BarState.Off)
-          .divider({ strokeWidth: 1, color: 0xFAFAFA, startMargin: 0, endMargin: 0 }) // 每行之间的分界线
-          .edgeEffect(EdgeEffect.Spring) // 边缘效果设置为Spring
-        }else{
-          Text('加载中...')
         }
+        .width('100%')
+        .height('100%')
       }
       .width('100%')
       .height('100%')
     }
-    .width('100%')
-    .height('100%')
+    .navDestination(this.pageMap)
+    .title('Star')
     .onAppear(() => {
       this.getStars()
     })

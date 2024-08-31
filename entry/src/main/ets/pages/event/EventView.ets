@@ -1,8 +1,11 @@
 @Component
 export struct EventView{
   build() {
-    Column(){
-      Text('')
+    Navigation(){
+      Column(){
+        Text('')
+      }
     }
+    .title('动态')
   }
 }

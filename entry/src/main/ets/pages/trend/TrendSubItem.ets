@@ -1,16 +1,15 @@
 import { StarResponse } from '../../model/StarResponse'
 
 @Component
-export struct StarItem{
+export struct TrendSubItem{
   @Prop item: StarResponse;
   build() {
     Row({space: 15}){
-      Image(this.item.owner.avatar_url)
+      Image(this.item.owner.portrait_url)
         .width(50)
         .borderRadius(25)
       Column({space: 5}){
         Text(this.item.name)
-          .maxLines(2)
         Text(this.item.description)
           .maxLines(2)
       }
