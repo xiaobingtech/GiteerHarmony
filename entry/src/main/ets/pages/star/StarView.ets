@@ -6,14 +6,19 @@ import { BusinessError } from '@kit.BasicServicesKit'
 import { router } from '@kit.ArkUI'
 import { DerivedNavPathStack } from '../../common/DerivedNavPathStack'
 import { RepoPage } from '../repo/RepoPage'
+import { MAX_OFFSET_Y, NORMAL_FONT_SIZE } from '../../common/CommonConstants'
+import PutDownRefresh from '../../common/PutDownRefreshLayout'
 
 
 @Component
 export struct StarView{
 
+  private currentOffsetY: number = 0;
+  @State refreshStatus: boolean = false;
+  @State refreshText: Resource = $r('app.string.refreshing_text');
+
   @State repos: Array<StarResponse> = []
   @State prev_id: number = 0
-  @State progress: number = 50
 
   derivedStack: DerivedNavPathStack = new DerivedNavPathStack();
 
@@ -31,6 +36,9 @@ export struct StarView{
       Row(){
         Column(){
           if (this.repos.length > 0) {
+            if (this.refreshStatus) {
+              PutDownRefresh({ refreshText: $refreshText })
+            }
             List(){
               ForEach(this.repos, (item: StarResponse) => {
                 StarItem({ item: item })
@@ -46,6 +54,10 @@ export struct StarView{
             .scrollBar(BarState.Off)
             .divider({ strokeWidth: 1, color: 0xFAFAFA, startMargin: 0, endMargin: 0 }) // 每行之间的分界线
             .edgeEffect(EdgeEffect.Spring) // 边缘效果设置为Spring
+            .onTouch((event?: TouchEvent) => {
+              this.putDownRefresh(event);
+            })
+            Text($r('app.string.prompt_message')).fontSize(NORMAL_FONT_SIZE).fontColor($r('app.color.gray'))
           }else{
             Text('加载中...')
           }
@@ -63,6 +75,29 @@ export struct StarView{
     })
   }
 
+  putDownRefresh(event?: TouchEvent): void {
+    if (event === undefined) {
+      return;
+    }
+    switch (event.type) {
+    // Record the y-coordinate pressed by the finger.
+      case TouchType.Down:
+        this.currentOffsetY = event.touches[0].y;
+        break;
+      case TouchType.Move:
+        // Determine whether to refresh based on the drop-down offset.
+        this.refreshStatus = event.touches[0].y - this.currentOffsetY > MAX_OFFSET_Y;
+        break;
+      case TouchType.Cancel:
+        break;
+      case TouchType.Up:
+        this.getStars()
+        break;
+      default:
+        break;
+    }
+  }
+
   getStars() {
     const session = rcp.createSession()
     // https://gitee.com/api/v5/users/fandongtongxue_admin/starred?access_token=8b54574d49a35d59fcbff25c54d3e934&limit=20&sort=created&direction=desc
@@ -77,10 +112,9 @@ export struct StarView{
         let result: Array<StarResponse> = JSON.parse(jsonStr)
         this.repos = result
       }
-      this.progress = 100
+      this.refreshStatus = false
     }).catch((err: BusinessError) => {
       console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
-      this.progress = 100
     })
   }
 }
