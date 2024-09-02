@@ -5,4 +5,5 @@ export interface LoginResponse {
   refresh_token: string,
   scope: string,
   created_at: number
+  message: string
 }

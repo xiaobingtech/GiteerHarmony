@@ -81,10 +81,5 @@ struct TabPage {
     .barWidth(this.currentBreakpoint === "lg" ? 96 : '100%')
     .barHeight(this.currentBreakpoint === "lg" ? '60%' : 56)
     .vertical(this.currentBreakpoint === "lg")
-    .onAppear(() => {
-      let data = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
-      let val = data?.getSync('access_token', '')
-      //刷新Token
-    })
   }
 }
