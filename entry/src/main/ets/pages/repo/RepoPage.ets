@@ -1,3 +1,4 @@
+import { it } from '@ohos/hypium';
 import { DerivedNavPathStack } from '../../common/DerivedNavPathStack';
 import { StarResponse } from '../../model/StarResponse';
 
@@ -11,6 +12,17 @@ export struct RepoPage {
   @State item: StarResponse = new StarResponse()
 
   derivedStack: DerivedNavPathStack | null = null;
+
+  @Builder NavigationMenus() {
+    Row() {
+      SymbolGlyph($r(this.item.starred ? 'sys.symbol.star' : 'sys.symbol.star_fill'))
+        .fontSize(24)
+    }
+    .padding(15)
+    .onClick(() => {
+      this.item.starred = !this.item.starred
+    })
+  }
 
   build() {
     NavDestination(){
@@ -63,5 +75,6 @@ export struct RepoPage {
       this.derivedStack = context.pathStack as DerivedNavPathStack
     })
     .title('仓库')
+    .menus(this.NavigationMenus())
   }
 }

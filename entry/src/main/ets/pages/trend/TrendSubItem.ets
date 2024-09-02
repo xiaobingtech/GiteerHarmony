@@ -9,7 +9,7 @@ export struct TrendSubItem{
         .width(50)
         .borderRadius(25)
       Column({space: 5}){
-        Text(this.item.name)
+        Text(this.item.name_with_namespace)
         Text(this.item.description)
           .maxLines(2)
         Text(this.item.updated_at)
