@@ -28,11 +28,12 @@ export struct TrendSubView{
           .scrollBar(BarState.Off)
           .divider({ strokeWidth: 1, color: 0xFAFAFA, startMargin: 0, endMargin: 0 }) // 每行之间的分界线
           .edgeEffect(EdgeEffect.Spring) // 边缘效果设置为Spring
+          .width('100%')
         }else{
-          Text('加载中...')
+          LoadingProgress()
+            .width('25%')
         }
       }
-      .width('100%')
       .height('100%')
     }
     .width('100%')

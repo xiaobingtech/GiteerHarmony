@@ -13,21 +13,20 @@ struct TabPage {
   @State selectIndex : number = 0
 
   @Builder
-  tabBarBuilder(index: number, title: string, img: ResourceStr, sel_img: ResourceStr) {
+  tabBarBuilder(index: number, title: string, img: string, sel_img: string) {
     if (this.currentBreakpoint !== 'md' ) {
       Column({space: 5}){
-        Image(index == this.selectIndex ? sel_img : img)
-          .width(30)
-        Text(title).fontColor(index == this.selectIndex ? Color.Red : Color.Black)
+        SymbolGlyph(index == this.selectIndex ? $r(sel_img) : $r(img))
+          .fontSize(30)
+          .fontColor(index == this.selectIndex ? [Color.Blue] : [Color.Gray])
+        Text(title).fontColor(index == this.selectIndex ? Color.Blue : Color.Black)
       }
     }else{
-      Row({space: 5}){
-        Image(index == this.selectIndex ? sel_img : img)
-          .width(30)
-        Text(title).fontColor(index == this.selectIndex ? Color.Red : Color.Black)
-      }
+      SymbolGlyph(index == this.selectIndex ? $r(sel_img) : $r(img))
+        .fontSize(30)
+        .fontColor(index == this.selectIndex ? [Color.Blue] : [Color.Gray])
+        Text(title).fontColor(index == this.selectIndex ? Color.Blue : Color.Black)
     }
-
   }
 
   build() {
@@ -35,43 +34,40 @@ struct TabPage {
       TabContent() {
         EventView()
       }
-      .tabBar(this.tabBarBuilder(0, '动态', $r('app.media.event'), $r('app.media.event')))
+      .tabBar(this.tabBarBuilder(0, '动态', 'sys.symbol.square_grid_2x2', 'sys.symbol.square_fill_grid_2x2'))
 
       TabContent() {
         StarView()
       }
-      .tabBar(this.tabBarBuilder(1, 'Star', $r('app.media.star'), $r('app.media.star')))
+      .tabBar(this.tabBarBuilder(1, 'Star', 'sys.symbol.star', 'sys.symbol.star_fill'))
 
       TabContent() {
         SearchView()
       }
-      .tabBar(this.tabBarBuilder(2, '搜索', $r('app.media.search'), $r('app.media.search')))
+      .tabBar(this.tabBarBuilder(2, '搜索', 'sys.symbol.magnifyingglass', 'sys.symbol.magnifyingglass'))
 
       TabContent() {
         TrendView()
       }
-      .tabBar(this.tabBarBuilder(3, '趋势', $r('app.media.star'), $r('app.media.star')))
+      .tabBar(this.tabBarBuilder(3, '趋势', 'sys.symbol.discover_fill', 'sys.symbol.discover_fill'))
 
       TabContent() {
-        NavDestination() {
-          Navigation(){
-            Text('退出登录')
-              .onClick(() => {
-                let data = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
-                data.putSync('access_token', '')
-                data.putSync('refresh_token', '')
-                data.flush()
-                router.replaceUrl({
-                  url: "pages/Index"
-                })
+        Navigation(){
+          Text('退出登录')
+            .onClick(() => {
+              let data = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
+              data.putSync('access_token', '')
+              data.putSync('refresh_token', '')
+              data.flush()
+              router.replaceUrl({
+                url: "pages/Index"
               })
-          }
-          .title('我的')
+            })
         }
+        .title('我的')
       }
-      .tabBar(this.tabBarBuilder(4, '我', $r('app.media.me'), $r('app.media.me')))
+      .tabBar(this.tabBarBuilder(4, '我', 'sys.symbol.person_crop_circle_fill_1', 'sys.symbol.person_crop_circle_fill_1'))
     }
-
     .onChange((index: number) => {
       this.selectIndex = index
     })
