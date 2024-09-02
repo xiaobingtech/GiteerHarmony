@@ -1,6 +1,9 @@
 import { it } from '@ohos/hypium';
 import { DerivedNavPathStack } from '../../common/DerivedNavPathStack';
 import { StarResponse } from '../../model/StarResponse';
+import { preferences } from '@kit.ArkData';
+import { rcp } from '@kit.RemoteCommunicationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 @Builder
 export function RepoPageBuilder(name: string, param: Object) {
@@ -20,7 +23,25 @@ export struct RepoPage {
     }
     .padding(15)
     .onClick(() => {
-      this.item.starred = !this.item.starred
+      const session = rcp.createSession()
+      let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
+      let url = `https://gitee.com/api/v5/user/starred/${this.item.full_name}?access_token=${tokenData.getSync('access_token', '')}`
+      console.log('当前URL:',url)
+      if (this.item.starred) {
+        session.put(url).then((response) => {
+          console.info(`Response succeeded: ${response}`);
+          this.item.starred = false
+        }).catch((err: BusinessError) => {
+          console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
+        })
+      }else{
+        session.delete(url).then((response) => {
+          console.info(`Response succeeded: ${response}`);
+          this.item.starred = true
+        }).catch((err: BusinessError) => {
+          console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
+        })
+      }
     })
   }
 
