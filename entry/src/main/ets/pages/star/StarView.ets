@@ -3,29 +3,16 @@ import { StarItem } from './StarItem'
 import { rcp } from '@kit.RemoteCommunicationKit'
 import { preferences } from '@kit.ArkData'
 import { BusinessError } from '@kit.BasicServicesKit'
-import { router } from '@kit.ArkUI'
 import { DerivedNavPathStack } from '../../common/DerivedNavPathStack'
-import { RepoPage } from '../repo/RepoPage'
-import { MAX_OFFSET_Y, NORMAL_FONT_SIZE } from '../../common/CommonConstants'
-import PutDownRefresh from '../../common/PutDownRefreshLayout'
 
 
 @Component
 export struct StarView{
 
+  @StorageProp('derivedStack') derivedStack: DerivedNavPathStack = new DerivedNavPathStack();
+
   @State repos: Array<StarResponse> = []
   @State prev_id: number = 0
-
-  derivedStack: DerivedNavPathStack = new DerivedNavPathStack();
-
-  aboutToAppear(): void {
-    this.derivedStack.setId('star stack');
-  }
-
-  @Builder
-  pageMap(name: string) {
-    RepoPage()
-  }
 
   build() {
     Navigation(this.derivedStack){
@@ -58,7 +45,6 @@ export struct StarView{
       .width('100%')
       .height('100%')
     }
-    .navDestination(this.pageMap)
     .title('Star')
     .onAppear(() => {
       this.getStars()
