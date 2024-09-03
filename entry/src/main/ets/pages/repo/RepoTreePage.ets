@@ -16,6 +16,7 @@ export function RepoTreePageBuilder(name: string, param: Object) {
 export struct RepoTreePage {
 
   @State item: StarResponse = new StarResponse()
+  @State isLoading:boolean = true
 
   derivedStack: DerivedNavPathStack | null = null;
 
@@ -26,23 +27,37 @@ export struct RepoTreePage {
   aboutToAppear(): void {
     this.treeListener.on(TreeListenType.NODE_CLICK, (callbackParam: CallbackParam) => {
       this.clickNodeId = callbackParam.currentNodeId;
+
     })
-    this.treeListener.on(TreeListenType.NODE_MOVE, (callbackParam: CallbackParam) => {
+    this.treeListener.on(TreeListenType.NODE_ADD, (callbackParam: CallbackParam) => {
+      this.clickNodeId = callbackParam.currentNodeId;
+    })
+    this.treeListener.on(TreeListenType.NODE_DELETE, (callbackParam: CallbackParam) => {
+      this.clickNodeId = callbackParam.currentNodeId;
+    })
+    this.treeListener.once(TreeListenType.NODE_MOVE, (callbackParam: CallbackParam) => {
       this.clickNodeId = callbackParam.currentNodeId;
     })
   }
 
   aboutToDisappear(): void {
     this.treeListener.off(TreeListenType.NODE_CLICK, undefined);
+    this.treeListener.off(TreeListenType.NODE_ADD, undefined);
+    this.treeListener.off(TreeListenType.NODE_DELETE, undefined);
     this.treeListener.off(TreeListenType.NODE_MOVE, undefined);
   }
 
   build() {
     NavDestination(){
       Column(){
-        TreeView({
-          treeController: this.treeController
-        })
+        if (this.isLoading) {
+          LoadingProgress()
+            .width('25%')
+        }else{
+          TreeView({
+            treeController: this.treeController
+          })
+        }
       }
       .height('100%')
       .width('100%')
@@ -52,7 +67,7 @@ export struct RepoTreePage {
       this.derivedStack = context.pathStack as DerivedNavPathStack
     })
     .onAppear(() =>{
-      let nodeParam: NodeParam = { parentNodeId:-1, currentNodeId: 1, isFolder: true, primaryTitle: '根目录'}
+      let nodeParam: NodeParam = { parentNodeId:-1, currentNodeId: 1, isFolder: true, icon: $r('app.media.folder'), selectedIcon: $r('app.media.folder'), primaryTitle: '根目录'}
       this.treeController.addNode(nodeParam)
         .buildDone()
       this.getContents('')
@@ -73,13 +88,15 @@ export struct RepoTreePage {
         let result: Array<RepoTreeResponse> = JSON.parse(jsonStr)
         for (let i = 0; i < result.length; i++) {
           let item = result[i]
-          this.treeController.addNode({parentNodeId: -1, currentNodeId: i + 1, isFolder: item.type == 'dir', primaryTitle: item.name})
+          this.treeController.addNode({parentNodeId: -1, currentNodeId: i + 2, isFolder: item.type == 'dir', icon: item.type == 'dir' ? $r('app.media.folder') : $r('app.media.file'), selectedIcon: item.type == 'dir' ? $r('app.media.folder') : $r('app.media.file'), primaryTitle: item.name})
         }
         this.treeController.buildDone()
         this.treeController.refreshNode(-1, '父节点', '子节点')
+        this.isLoading = false
       }
     }).catch((err: BusinessError) => {
       console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
+      this.isLoading = false
     })
   }
 }

@@ -2,6 +2,7 @@ import { StarResponse } from '../../model/StarResponse'
 import { rcp } from '@kit.RemoteCommunicationKit'
 import { BusinessError } from '@kit.BasicServicesKit'
 import { TrendSubItem } from './TrendSubItem'
+import { DerivedNavPathStack } from '../../common/DerivedNavPathStack'
 
 
 @Component
@@ -13,6 +14,12 @@ export struct TrendSubView{
   @State prev_id: number = 0
   @State progress: number = 50
 
+  private derivedStack: DerivedNavPathStack | null = null
+
+  aboutToAppear(): void {
+    this.derivedStack = AppStorage.get('derivedStack') as DerivedNavPathStack
+  }
+
   build() {
     Row(){
       Column(){
@@ -21,7 +28,13 @@ export struct TrendSubView{
             ForEach(this.repos, (item: StarResponse) => {
               TrendSubItem({ item: item })
                 .onClick(() => {
-
+                  if (this.derivedStack != null) {
+                    if (this.derivedStack.size() == 0) {
+                      this.derivedStack.pushPath({name: 'RepoPage', param: item.path_with_namespace})
+                    }else{
+                      this.derivedStack.replacePath({name: 'RepoPage', param: item.path_with_namespace})
+                    }
+                  }
                 })
             }, (item: StarResponse) => item.name)
           }

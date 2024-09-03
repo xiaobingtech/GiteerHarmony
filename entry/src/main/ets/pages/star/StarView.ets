@@ -29,9 +29,9 @@ export struct StarView{
                   .onClick(() => {
                     if (this.derivedStack != null) {
                       if (this.derivedStack.size() == 0) {
-                        this.derivedStack.pushPath({name: 'RepoPage', param: item})
+                        this.derivedStack.pushPath({name: 'RepoPage', param: item.full_name})
                       }else{
-                        this.derivedStack.replacePath({name: 'RepoPage', param: item})
+                        this.derivedStack.replacePath({name: 'RepoPage', param: item.full_name})
                       }
                     }
                   })

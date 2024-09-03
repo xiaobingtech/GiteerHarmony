@@ -4,6 +4,7 @@ export class StarResponse {
   name: string = ''
   humman_name: string = ''
   name_with_namespace: string = ''
+  path_with_namespace: string = ''
   full_name: string = ''
   description: string = ''
   owner: UserResponse = new UserResponse()
