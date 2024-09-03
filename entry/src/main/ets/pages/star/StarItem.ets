@@ -1,8 +1,8 @@
-import { StarResponse } from '../../model/StarResponse'
+import { RepoModel } from '../../model/RepoModel';
 
 @Component
 export struct StarItem{
-  @Prop item: StarResponse;
+  @Prop item: RepoModel;
   build() {
     Row({space: 15}){
       Image(this.item.owner.avatar_url)

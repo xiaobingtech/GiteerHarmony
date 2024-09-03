@@ -1,8 +1,8 @@
-import { StarResponse } from '../../model/StarResponse'
+import { RepoModel } from '../../model/RepoModel'
 
 @Component
 export struct TrendSubItem{
-  @Prop item: StarResponse;
+  @Prop item: RepoModel;
   build() {
     Row({space: 15}){
       if (this.item.owner.portrait_url != '') {

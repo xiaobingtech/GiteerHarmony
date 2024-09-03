@@ -2,10 +2,10 @@ import { webview } from '@kit.ArkWeb';
 import { router } from '@kit.ArkUI';
 import { Constraints } from '../Constraints';
 import { rcp } from '@kit.RemoteCommunicationKit';
-import { LoginResponse } from '../model/LoginResponse';
+import { LoginModel } from '../model/LoginModel';
 import { preferences } from '@kit.ArkData'
 import { BusinessError } from '@kit.BasicServicesKit';
-import { UserResponse } from '../model/UserResponse';
+import { UserModel } from '../model/UserModel';
 import { DerivedNavPathStack } from '../common/DerivedNavPathStack';
 
 @Entry
@@ -61,7 +61,7 @@ export struct WebPage {
       // {"access_token":"1f929233277fc8f9ccd8d39d29c0e946","token_type":"bearer","expires_in":86400,"refresh_token":"34433cfe6e7eea90cdf797b01789529291a4632d93c1038e34c5e36aa8b9d94e","scope":"user_info projects pull_requests issues notes keys hook groups gists enterprises emails","created_at":1719303807}
       let jsonStr = response.toString()
       if (jsonStr != null) {
-        let result: LoginResponse = JSON.parse(jsonStr)
+        let result: LoginModel = JSON.parse(jsonStr)
         //存储数据
         let data = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
         data?.putSync('access_token', result.access_token)
@@ -80,7 +80,7 @@ export struct WebPage {
       console.info(`Response succeeded: ${response}`);
       let jsonStr = response.toString()
       if (jsonStr != null) {
-        let result: UserResponse = JSON.parse(jsonStr)
+        let result: UserModel = JSON.parse(jsonStr)
         //存储数据
         let data = preferences.getPreferencesSync(getContext(this), { name: 'user.db' })
         data?.putSync('login', result.login)

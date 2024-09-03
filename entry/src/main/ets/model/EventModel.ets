@@ -55,7 +55,7 @@ export interface Payload {
   commits: Commit[];
 }
 
-export interface EventResponse {
+export interface EventModel {
   id: number;
   type: string;
   actor: Actor;

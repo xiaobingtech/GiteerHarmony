@@ -1,9 +1,9 @@
 import { it } from '@ohos/hypium';
 import { DerivedNavPathStack } from '../../common/DerivedNavPathStack';
-import { StarResponse } from '../../model/StarResponse';
 import { preferences } from '@kit.ArkData';
 import { rcp } from '@kit.RemoteCommunicationKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { RepoModel } from '../../model/RepoModel';
 
 @Builder
 export function RepoPageBuilder(name: string, param: Object) {
@@ -12,33 +12,33 @@ export function RepoPageBuilder(name: string, param: Object) {
 
 @Component
 export struct RepoPage {
-  @State item: StarResponse = new StarResponse()
+  @State item: RepoModel|null = null
   @State name: string = ''
 
   private derivedStack: DerivedNavPathStack | null = null;
 
   @Builder NavigationMenus() {
     Row() {
-      SymbolGlyph($r(this.item.starred ? 'sys.symbol.star' : 'sys.symbol.star_fill'))
+      SymbolGlyph($r(this.item?.stared ? 'sys.symbol.star' : 'sys.symbol.star_fill'))
         .fontSize(24)
     }
     .padding(15)
     .onClick(() => {
       const session = rcp.createSession()
       let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
-      let url = `https://gitee.com/api/v5/user/starred/${this.item.full_name}?access_token=${tokenData.getSync('access_token', '')}`
+      let url = `https://gitee.com/api/v5/user/starred/${this.item?.full_name}?access_token=${tokenData.getSync('access_token', '')}`
       console.log('当前URL:',url)
-      if (this.item.starred) {
+      if (this.item?.stared) {
         session.put(url).then((response) => {
           console.info(`Response succeeded: ${response}`);
-          this.item.starred = false
+          // this.item?.stared = false
         }).catch((err: BusinessError) => {
           console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
         })
       }else{
         session.delete(url).then((response) => {
           console.info(`Response succeeded: ${response}`);
-          this.item.starred = true
+          // this.item?.stared = true
         }).catch((err: BusinessError) => {
           console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
         })
@@ -48,11 +48,11 @@ export struct RepoPage {
 
   build() {
     NavDestination(){
-      if (this.item.name != '') {
+      if (this.item?.name != '') {
         Column(){
           Row({space: 15}){
-            if (this.item.owner.avatar_url != '') {
-              Image(this.item.owner.avatar_url)
+            if (this.item?.owner.avatar_url != '') {
+              Image(this.item?.owner.avatar_url)
                 .width(50)
                 .borderRadius(25)
             }else{
@@ -61,9 +61,9 @@ export struct RepoPage {
                 .borderRadius(25)
             }
             Column({space: 5}){
-              Text(this.item.human_name)
-              Text(this.item.description)
-              Text(this.item.updated_at)
+              Text(this.item?.human_name)
+              Text(this.item?.description)
+              Text(this.item?.updated_at)
             }
             .alignItems(HorizontalAlign.Start)
             .width('calc(100% - 70vp)')
@@ -124,7 +124,7 @@ export struct RepoPage {
       console.info(`Response succeeded: ${response}`);
       let jsonStr = response.toString()
       if (jsonStr != null) {
-        let result: StarResponse = JSON.parse(jsonStr)
+        let result: RepoModel = JSON.parse(jsonStr)
         this.item = result
       }
     }).catch((err: BusinessError) => {

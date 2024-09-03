@@ -1,14 +1,14 @@
-import { EventResponse } from '../../model/EventResponse';
+import { EventModel } from '../../model/EventModel';
 
 @Component
 export struct EventItem {
-  @Prop item: EventResponse;
+  @Prop item: EventModel|null = null;
   build() {
     Row({space: 15}){
-      Image(this.item.actor.avatar_url)
+      Image(this.item?.actor.avatar_url)
         .width(50)
         .borderRadius(25)
-      Text(this.item.actor.name)
+      Text(this.item?.actor.name)
     }
     .alignItems(VerticalAlign.Top)
     .padding(15)

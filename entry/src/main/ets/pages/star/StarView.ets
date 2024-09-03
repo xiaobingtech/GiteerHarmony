@@ -1,15 +1,15 @@
-import { StarResponse } from '../../model/StarResponse'
 import { StarItem } from './StarItem'
 import { rcp } from '@kit.RemoteCommunicationKit'
 import { preferences } from '@kit.ArkData'
 import { BusinessError } from '@kit.BasicServicesKit'
 import { DerivedNavPathStack } from '../../common/DerivedNavPathStack'
+import { RepoModel } from '../../model/RepoModel'
 
 
 @Component
 export struct StarView{
 
-  @State repos: Array<StarResponse> = []
+  @State repos: Array<RepoModel> = []
 
   private derivedStack: DerivedNavPathStack | null = null
 
@@ -23,7 +23,7 @@ export struct StarView{
         Column(){
           if (this.repos.length > 0) {
             List(){
-              ForEach(this.repos, (item: StarResponse) => {
+              ForEach(this.repos, (item: RepoModel) => {
                 StarItem({ item: item })
                   .onClick(() => {
                     if (this.derivedStack != null) {
@@ -34,7 +34,7 @@ export struct StarView{
                       }
                     }
                   })
-              }, (item: StarResponse) => item.name)
+              }, (item: RepoModel) => item.name)
             }
             .scrollBar(BarState.Off)
             .divider({ strokeWidth: 1, color: 0xFAFAFA, startMargin: 0, endMargin: 0 }) // 每行之间的分界线
@@ -67,7 +67,7 @@ export struct StarView{
       console.info(`Response succeeded: ${response}`);
       let jsonStr = response.toString()
       if (jsonStr != null) {
-        let result: Array<StarResponse> = JSON.parse(jsonStr)
+        let result: Array<RepoModel> = JSON.parse(jsonStr)
         this.repos = result
       }
     }).catch((err: BusinessError) => {

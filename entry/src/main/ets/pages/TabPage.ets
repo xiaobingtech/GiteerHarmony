@@ -2,6 +2,7 @@ import { preferences } from '@kit.ArkData'
 import { router } from '@kit.ArkUI'
 import { DerivedNavPathStack } from '../common/DerivedNavPathStack'
 import { EventView } from './event/EventView'
+import { MeView } from './me/MeView'
 import { SearchView } from './search/SearchView'
 import { StarView } from './star/StarView'
 import { TrendView } from './trend/TrendView'
@@ -62,19 +63,7 @@ struct TabPage {
         .tabBar(this.tabBarBuilder(3, '趋势', 'sys.symbol.discover_fill', 'sys.symbol.discover_fill'))
 
         TabContent() {
-          Navigation(){
-            Text('退出登录')
-              .onClick(() => {
-                let data = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
-                data.putSync('access_token', '')
-                data.putSync('refresh_token', '')
-                data.flush()
-                router.replaceUrl({
-                  url: "pages/Index"
-                })
-              })
-          }
-          .title('我的')
+          MeView()
         }
         .tabBar(this.tabBarBuilder(4, '我', 'sys.symbol.person_crop_circle_fill_1', 'sys.symbol.person_crop_circle_fill_1'))
       }

@@ -1,4 +1,4 @@
-import { StarResponse } from '../../model/StarResponse'
+import { RepoModel } from '../../model/RepoModel'
 import { rcp } from '@kit.RemoteCommunicationKit'
 import { BusinessError } from '@kit.BasicServicesKit'
 import { TrendSubItem } from './TrendSubItem'
@@ -10,7 +10,7 @@ export struct TrendSubView{
 
   @Prop type: string = ''
 
-  @State repos: Array<StarResponse> = []
+  @State repos: Array<RepoModel> = []
   @State prev_id: number = 0
   @State progress: number = 50
 
@@ -25,7 +25,7 @@ export struct TrendSubView{
       Column(){
         if (this.repos.length > 0) {
           List(){
-            ForEach(this.repos, (item: StarResponse) => {
+            ForEach(this.repos, (item: RepoModel) => {
               TrendSubItem({ item: item })
                 .onClick(() => {
                   if (this.derivedStack != null) {
@@ -36,7 +36,7 @@ export struct TrendSubView{
                     }
                   }
                 })
-            }, (item: StarResponse) => item.name)
+            }, (item: RepoModel) => item.name)
           }
           .scrollBar(BarState.Off)
           .divider({ strokeWidth: 1, color: 0xFAFAFA, startMargin: 0, endMargin: 0 }) // 每行之间的分界线
@@ -62,7 +62,7 @@ export struct TrendSubView{
       console.info(`Response succeeded: ${response}`);
       let jsonStr = response.toString()
       if (jsonStr != null) {
-        let result: Array<StarResponse> = JSON.parse(jsonStr)
+        let result: Array<RepoModel> = JSON.parse(jsonStr)
         this.repos = result
       }
       this.progress = 100

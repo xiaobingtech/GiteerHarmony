@@ -1,6 +1,6 @@
 import { preferences } from '@kit.ArkData'
 import { rcp } from '@kit.RemoteCommunicationKit'
-import { EventResponse } from '../../model/EventResponse'
+import { EventModel } from '../../model/EventModel'
 import { BusinessError } from '@kit.BasicServicesKit'
 import { DerivedNavPathStack } from '../../common/DerivedNavPathStack'
 import { EventItem } from './EventItem'
@@ -8,7 +8,7 @@ import { EventItem } from './EventItem'
 @Component
 export struct EventView{
 
-  @State events: Array<EventResponse> = []
+  @State events: Array<EventModel> = []
 
   private derivedStack: DerivedNavPathStack | null = null
 
@@ -22,7 +22,7 @@ export struct EventView{
         Column(){
           if (this.events.length > 0) {
             List(){
-              ForEach(this.events, (item: EventResponse) => {
+              ForEach(this.events, (item: EventModel) => {
                 EventItem({ item: item })
                   .onClick(() => {
                     if (this.derivedStack != null) {
@@ -33,7 +33,7 @@ export struct EventView{
                       }
                     }
                   })
-              }, (item: EventResponse) => item.id.toString())
+              }, (item: EventModel) => item.id.toString())
             }
             .scrollBar(BarState.Off)
             .divider({ strokeWidth: 1, color: 0xFAFAFA, startMargin: 0, endMargin: 0 }) // 每行之间的分界线
@@ -66,7 +66,7 @@ export struct EventView{
       console.info(`Response succeeded: ${response}`);
       let jsonStr = response.toString()
       if (jsonStr != null) {
-        let result: Array<EventResponse> = JSON.parse(jsonStr)
+        let result: Array<EventModel> = JSON.parse(jsonStr)
         this.events = result
       }
     }).catch((err: BusinessError) => {
