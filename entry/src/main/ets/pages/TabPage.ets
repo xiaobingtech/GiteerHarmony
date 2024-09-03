@@ -29,10 +29,12 @@ struct TabPage {
         Text(title).fontColor(index == this.selectIndex ? Color.Blue : Color.Black)
       }
     }else{
-      SymbolGlyph(index == this.selectIndex ? $r(sel_img) : $r(img))
-        .fontSize(30)
-        .fontColor(index == this.selectIndex ? [Color.Blue] : [Color.Gray])
+      Row({space: 5}){
+        SymbolGlyph(index == this.selectIndex ? $r(sel_img) : $r(img))
+          .fontSize(30)
+          .fontColor(index == this.selectIndex ? [Color.Blue] : [Color.Gray])
         Text(title).fontColor(index == this.selectIndex ? Color.Blue : Color.Black)
+      }
     }
   }
 

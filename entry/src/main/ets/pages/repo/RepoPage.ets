@@ -14,7 +14,7 @@ export function RepoPageBuilder(name: string, param: Object) {
 export struct RepoPage {
   @State item: StarResponse = new StarResponse()
 
-  derivedStack: DerivedNavPathStack | null = null;
+  private derivedStack: DerivedNavPathStack | null = null;
 
   @Builder NavigationMenus() {
     Row() {
