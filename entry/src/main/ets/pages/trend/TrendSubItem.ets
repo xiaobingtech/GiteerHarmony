@@ -5,9 +5,15 @@ export struct TrendSubItem{
   @Prop item: StarResponse;
   build() {
     Row({space: 15}){
-      Image(this.item.owner.portrait_url)
-        .width(50)
-        .borderRadius(25)
+      if (this.item.owner.portrait_url != '') {
+        Image(this.item.owner.portrait_url)
+          .width(50)
+          .borderRadius(25)
+      }else{
+        Image('https://gitee.com/assets/no_portrait.png')
+          .width(50)
+          .borderRadius(25)
+      }
       Column({space: 5}){
         Text(this.item.name_with_namespace)
         Text(this.item.description)

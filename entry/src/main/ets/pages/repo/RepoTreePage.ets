@@ -27,7 +27,6 @@ export struct RepoTreePage {
   aboutToAppear(): void {
     this.treeListener.on(TreeListenType.NODE_CLICK, (callbackParam: CallbackParam) => {
       this.clickNodeId = callbackParam.currentNodeId;
-
     })
     this.treeListener.on(TreeListenType.NODE_ADD, (callbackParam: CallbackParam) => {
       this.clickNodeId = callbackParam.currentNodeId;
@@ -67,12 +66,12 @@ export struct RepoTreePage {
       this.derivedStack = context.pathStack as DerivedNavPathStack
     })
     .onAppear(() =>{
-      let nodeParam: NodeParam = { parentNodeId:-1, currentNodeId: 1, isFolder: true, icon: $r('app.media.folder'), selectedIcon: $r('app.media.folder'), primaryTitle: '根目录'}
+      let nodeParam: NodeParam = { parentNodeId:-1, currentNodeId: 0, isFolder: true, icon: $r('app.media.folder'), selectedIcon: $r('app.media.folder'), primaryTitle: '根目录'}
       this.treeController.addNode(nodeParam)
         .buildDone()
       this.getContents('')
     })
-    .title(this.item.humman_name)
+    .title('仓库Tree')
   }
 
   getContents(path: string) {
@@ -88,7 +87,7 @@ export struct RepoTreePage {
         let result: Array<RepoTreeResponse> = JSON.parse(jsonStr)
         for (let i = 0; i < result.length; i++) {
           let item = result[i]
-          this.treeController.addNode({parentNodeId: -1, currentNodeId: i + 2, isFolder: item.type == 'dir', icon: item.type == 'dir' ? $r('app.media.folder') : $r('app.media.file'), selectedIcon: item.type == 'dir' ? $r('app.media.folder') : $r('app.media.file'), primaryTitle: item.name})
+          this.treeController.addNode({parentNodeId: -1, currentNodeId: i +1, isFolder: item.type == 'dir', icon: item.type == 'dir' ? $r('app.media.folder') : $r('app.media.file'), selectedIcon: item.type == 'dir' ? $r('app.media.folder') : $r('app.media.file'), primaryTitle: item.name})
         }
         this.treeController.buildDone()
         this.treeController.refreshNode(-1, '父节点', '子节点')

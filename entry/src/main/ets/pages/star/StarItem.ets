@@ -9,7 +9,7 @@ export struct StarItem{
         .width(50)
         .borderRadius(25)
       Column({space: 5}){
-        Text(this.item.humman_name)
+        Text(this.item.human_name)
           .maxLines(2)
         Text(this.item.description)
           .maxLines(2)

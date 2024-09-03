@@ -61,7 +61,7 @@ export struct RepoPage {
                 .borderRadius(25)
             }
             Column({space: 5}){
-              Text(this.item.name)
+              Text(this.item.human_name)
               Text(this.item.description)
               Text(this.item.updated_at)
             }
