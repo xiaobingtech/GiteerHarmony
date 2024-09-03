@@ -15,37 +15,34 @@ export struct StarView{
   @State prev_id: number = 0
 
   build() {
-    Navigation(this.derivedStack){
-      Row(){
-        Column(){
-          if (this.repos.length > 0) {
-            List(){
-              ForEach(this.repos, (item: StarResponse) => {
-                StarItem({ item: item })
-                  .onClick(() => {
-                    if (this.derivedStack.size() == 0) {
-                      this.derivedStack.pushPath({name: 'RepoPage', param: item})
-                    }else{
-                      this.derivedStack.replacePath({name: 'RepoPage', param: item})
-                    }
-                  })
-              }, (item: StarResponse) => item.name)
-            }
-            .scrollBar(BarState.Off)
-            .divider({ strokeWidth: 1, color: 0xFAFAFA, startMargin: 0, endMargin: 0 }) // 每行之间的分界线
-            .edgeEffect(EdgeEffect.Spring) // 边缘效果设置为Spring
-            .width('100%')
-          }else{
-            LoadingProgress()
-              .width('25%')
+    Row(){
+      Column(){
+        if (this.repos.length > 0) {
+          List(){
+            ForEach(this.repos, (item: StarResponse) => {
+              StarItem({ item: item })
+                .onClick(() => {
+                  if (this.derivedStack.size() == 0) {
+                    this.derivedStack.pushPath({name: 'RepoPage', param: item})
+                  }else{
+                    this.derivedStack.replacePath({name: 'RepoPage', param: item})
+                  }
+                })
+            }, (item: StarResponse) => item.name)
           }
+          .scrollBar(BarState.Off)
+          .divider({ strokeWidth: 1, color: 0xFAFAFA, startMargin: 0, endMargin: 0 }) // 每行之间的分界线
+          .edgeEffect(EdgeEffect.Spring) // 边缘效果设置为Spring
+          .width('100%')
+        }else{
+          LoadingProgress()
+            .width('25%')
         }
-        .height('100%')
       }
-      .width('100%')
       .height('100%')
     }
-    .title('Star')
+    .width('100%')
+    .height('100%')
     .onAppear(() => {
       this.getStars()
     })

@@ -16,7 +16,7 @@ struct TabPage {
   derivedStack: DerivedNavPathStack = new DerivedNavPathStack();
 
   aboutToAppear(): void {
-    AppStorage.SetOrCreate('derivedStack', this.derivedStack)
+    AppStorage.setOrCreate('derivedStack', this.derivedStack)
   }
 
   @Builder
