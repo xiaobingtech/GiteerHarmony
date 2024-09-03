@@ -10,7 +10,6 @@ import { DerivedNavPathStack } from '../../common/DerivedNavPathStack'
 export struct StarView{
 
   @State repos: Array<StarResponse> = []
-  @State prev_id: number = 0
 
   private derivedStack: DerivedNavPathStack | null = null
 
