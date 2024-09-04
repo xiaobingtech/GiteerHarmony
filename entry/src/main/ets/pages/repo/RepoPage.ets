@@ -100,7 +100,7 @@ export struct RepoPage {
         }
       }else{
         LoadingProgress()
-          .width('25%')
+          .width(100)
       }
     }
     .onReady((context) => {

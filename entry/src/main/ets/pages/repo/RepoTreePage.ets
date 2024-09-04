@@ -51,11 +51,14 @@ export struct RepoTreePage {
       Column(){
         if (this.isLoading) {
           LoadingProgress()
-            .width('25%')
+            .width(100)
+            .height('100%')
         }else{
           TreeView({
             treeController: this.treeController
           })
+            .width('100%')
+            .height('100%')
         }
       }
       .height('100%')

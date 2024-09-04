@@ -62,7 +62,7 @@ export struct MeView{
             })
         } else {
           LoadingProgress()
-            .width('25%')
+            .width(100)
             .height('100%')
         }
       }

@@ -41,7 +41,7 @@ export struct EventView{
           .height('100%')
         }else{
           LoadingProgress()
-            .width('25%')
+            .width(100)
             .height('100%')
         }
       }

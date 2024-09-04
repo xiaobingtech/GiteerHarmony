@@ -24,7 +24,7 @@ export struct WebPage {
       Column(){
         if (this.title.length == 0) {
           LoadingProgress()
-            .width('25%')
+            .width(100)
             .height('100%')
         }
         Web({
