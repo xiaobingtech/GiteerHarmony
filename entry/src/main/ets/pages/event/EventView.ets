@@ -18,33 +18,32 @@ export struct EventView{
 
   build() {
     Navigation(){
-      Row(){
-        Column(){
-          if (this.events.length > 0) {
-            List(){
-              ForEach(this.events, (item: EventModel) => {
-                EventItem({ item: item })
-                  .onClick(() => {
-                    if (this.derivedStack != null) {
-                      if (this.derivedStack.size() == 0) {
+      Column(){
+        if (this.events.length > 0) {
+          List(){
+            ForEach(this.events, (item: EventModel) => {
+              EventItem({ item: item })
+                .onClick(() => {
+                  if (this.derivedStack != null) {
+                    if (this.derivedStack.size() == 0) {
 
-                      }else{
+                    }else{
 
-                      }
                     }
-                  })
-              }, (item: EventModel) => item.id.toString())
-            }
-            .scrollBar(BarState.Off)
-            .divider({ strokeWidth: 1, color: 0xFAFAFA, startMargin: 0, endMargin: 0 }) // 每行之间的分界线
-            .edgeEffect(EdgeEffect.Spring) // 边缘效果设置为Spring
-            .width('100%')
-          }else{
-            LoadingProgress()
-              .width('25%')
+                  }
+                })
+            }, (item: EventModel) => item.id.toString())
           }
+          .scrollBar(BarState.Off)
+          .divider({ strokeWidth: 1, color: 0xFAFAFA, startMargin: 0, endMargin: 0 }) // 每行之间的分界线
+          .edgeEffect(EdgeEffect.Spring) // 边缘效果设置为Spring
+          .width('100%')
+          .height('100%')
+        }else{
+          LoadingProgress()
+            .width('25%')
+            .height('100%')
         }
-        .height('100%')
       }
       .width('100%')
       .height('100%')

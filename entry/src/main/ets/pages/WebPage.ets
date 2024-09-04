@@ -15,15 +15,25 @@ export struct WebPage {
   @State title: string = ''
   controller: webview.WebviewController = new webview.WebviewController()
 
+  progress: number = 0
+
   derivedStack: DerivedNavPathStack = new DerivedNavPathStack();
 
   build() {
     NavDestination(){
       Column(){
+        if (this.title.length == 0) {
+          LoadingProgress()
+            .width('25%')
+            .height('100%')
+        }
         Web({
           src: this.url,
           controller:this.controller
         })
+          .onProgressChange((data) =>{
+            this.progress = data.newProgress
+          })
           .onOverrideUrlLoading((request: WebResourceRequest) => {
             console.log('当前加载的URL:', request.getRequestUrl())
             if (request.getRequestUrl().startsWith(Constraints.redirect_uri)) {
@@ -39,9 +49,11 @@ export struct WebPage {
             this.title = data.title
           })
       }
-      .height('100%')
       .width('100%')
+      .height('100%')
     }
+    .width('100%')
+    .height('100%')
     .onReady((context) => {
       this.url = context.pathInfo.param as string
     })

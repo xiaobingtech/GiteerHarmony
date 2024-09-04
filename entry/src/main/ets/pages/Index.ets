@@ -78,8 +78,9 @@ struct Index {
           .backgroundColor('#b12c25')
           .width('100%')
           .onClick(() => {
-            console.log("点击了登录")
-            this.derivedStack.pushPath({name: 'WebPage', param: `https://gitee.com/oauth/authorize?client_id=${Constraints.client_id}&redirect_uri=${Constraints.redirect_uri}&response_type=code`})
+            let url = `https://gitee.com/oauth/authorize?client_id=${Constraints.client_id}&redirect_uri=${Constraints.redirect_uri}&response_type=code`
+            console.log('当前加载URL:'+url)
+            this.derivedStack.pushPath({name: 'WebPage', param: url})
           })
       }
       .height('100%')
