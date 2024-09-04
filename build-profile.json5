@@ -5,13 +5,13 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "storePassword": "0000001C7BE8C7022F82D129098910CD22FAC204B7CF519084A9476FD0B3565DE291E4CC8C0B57000CA4EE0A",
-          "certpath": "D:/Users/fando/Downloads/dis.cer",
+          "storePassword": "0000001C67B8AC9CF0B15492B3A98D4AB1338862566D32752EB1F74EE22896FB082FD70023F279602D84387D",
+          "certpath": "E:/GitHub/GiteerHarmony/dis.cer",
           "keyAlias": "key",
-          "keyPassword": "0000001C3202FFE5BFBF7CF3CFCB52257A466D12433887739E4DF896245FEBE3CD9DA2B9B43D4A3B95D0E06E",
-          "profile": "D:/Users/fando/Downloads/disRelease.p7b",
+          "keyPassword": "0000001CAD113A21131F5624D5EEBBF2C92B76F7FFBE788B2416861030B5817C6A92C5B630CAE5A5ADE0417A",
+          "profile": "E:/GitHub/GiteerHarmony/disRelease.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "D:/Users/fando/Documents/GitHub/GiteerHarmony/dis.p12"
+          "storeFile": "E:/GitHub/GiteerHarmony/dis.p12"
         }
       }
     ],

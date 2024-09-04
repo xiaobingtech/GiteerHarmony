@@ -4,6 +4,10 @@ import { preferences } from '@kit.ArkData';
 import { rcp } from '@kit.RemoteCommunicationKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { RepoModel } from '../../model/RepoModel';
+import { ReadmeModel } from '../../model/ReadmeModel';
+import { Base64 } from '@ohos/base64';
+import { lvMarkdownIn } from '@luvi/lv-markdown-in'
+
 
 @Builder
 export function RepoPageBuilder(name: string, param: Object) {
@@ -14,6 +18,7 @@ export function RepoPageBuilder(name: string, param: Object) {
 export struct RepoPage {
   @State item: RepoModel|null = null
   @State name: string = ''
+  @State readme: ReadmeModel|null = null
 
   private derivedStack: DerivedNavPathStack | null = null;
 
@@ -49,54 +54,59 @@ export struct RepoPage {
   build() {
     NavDestination(){
       if (this.item?.name != '') {
-        Column(){
-          Row({space: 15}){
-            if (this.item?.owner.avatar_url != '') {
-              Image(this.item?.owner.avatar_url)
-                .width(50)
-                .borderRadius(25)
-            }else{
-              Image('https://gitee.com/assets/no_portrait.png')
-                .width(50)
-                .borderRadius(25)
+        Scroll(){
+          Column(){
+            Row({space: 15}){
+              if (this.item?.owner.avatar_url != '') {
+                Image(this.item?.owner.avatar_url)
+                  .width(50)
+                  .borderRadius(25)
+              }else{
+                Image('https://gitee.com/assets/no_portrait.png')
+                  .width(50)
+                  .borderRadius(25)
+              }
+              Column({space: 5}){
+                Text(this.item?.human_name)
+                Text(this.item?.description)
+                Text(this.item?.updated_at)
+              }
+              .alignItems(HorizontalAlign.Start)
+              .width('calc(100% - 70vp)')
             }
-            Column({space: 5}){
-              Text(this.item?.human_name)
-              Text(this.item?.description)
-              Text(this.item?.updated_at)
+            .alignItems(VerticalAlign.Top)
+            .padding(15)
+            Divider()
+            Row(){
+              Text('代码')
+              Blank()
+              SymbolGlyph($r('sys.symbol.chevron_right'))
             }
-            .alignItems(HorizontalAlign.Start)
-            .width('calc(100% - 70vp)')
-          }
-          .alignItems(VerticalAlign.Top)
-          .padding(15)
-          Divider()
-          Row(){
-            Text('代码')
-            Blank()
-            SymbolGlyph($r('sys.symbol.chevron_right'))
-          }
-          .onClick(() => {
-            if (this.derivedStack) {
-              this.derivedStack.pushPath({name: 'RepoTreePage', param: this.item})
+            .onClick(() => {
+              if (this.derivedStack) {
+                this.derivedStack.pushPath({name: 'RepoTreePage', param: this.item})
+              }
+            })
+            .width('100%')
+            .height(44)
+            .padding(15)
+            Divider()
+            Row(){
+              Text('README')
+              Blank()
+              SymbolGlyph($r('sys.symbol.arrow_clockwise'))
             }
-          })
-          .width('100%')
-          .height(44)
-          .padding(15)
-          Divider()
-          Row(){
-            Text('README')
-            Blank()
-            SymbolGlyph($r('sys.symbol.arrow_clockwise'))
-          }
-          .onClick(() => {
+            .onClick(() => {
 
-          })
-          .width('100%')
-          .height(44)
-          .padding(15)
-          Divider()
+            })
+            .width('100%')
+            .height(44)
+            .padding(15)
+            Divider()
+            if (this.readme != null) {
+              lvMarkdownIn({text: Base64.bytesToString(Base64.decode(this.readme?.content))})
+            }
+          }
         }
       }else{
         LoadingProgress()
@@ -110,6 +120,7 @@ export struct RepoPage {
     })
     .onAppear(() =>{
       this.getRepo()
+      this.getRepoReadme()
     })
     .title('仓库')
     .menus(this.NavigationMenus())
@@ -126,6 +137,23 @@ export struct RepoPage {
       if (jsonStr != null) {
         let result: RepoModel = JSON.parse(jsonStr)
         this.item = result
+      }
+    }).catch((err: BusinessError) => {
+      console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
+    })
+  }
+
+  getRepoReadme() {
+    const session = rcp.createSession()
+    let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
+    let url = `https://gitee.com/api/v5/repos/${this.name}/readme?access_token=${tokenData.getSync('access_token', '')}`
+    console.log('当前URL:',url)
+    session.get(url).then((response) => {
+      console.info(`Response succeeded: ${response}`);
+      let jsonStr = response.toString()
+      if (jsonStr != null) {
+        let result: ReadmeModel = JSON.parse(jsonStr)
+        this.readme = result
       }
     }).catch((err: BusinessError) => {
       console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
