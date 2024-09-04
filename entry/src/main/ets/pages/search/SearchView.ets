@@ -1,26 +1,32 @@
 import { StarView } from '../star/StarView'
+import { UserListView } from './UserListView'
 
 @Component
 export struct SearchView {
   controller: SearchController = new SearchController()
+
+  @State q: string = ''
+
   build() {
     Navigation(){
-      Column(){
-        Search({
-          placeholder: '请输入搜索内容',
-          controller: this.controller
-        })
-          .onSubmit(() => {
-
+      Row(){
+        Column(){
+          Search({
+            placeholder: '请输入搜索内容',
+            controller: this.controller
           })
-          .margin(15)
-        Tabs(){
-          TabContent(){
+            .onSubmit((value) => {
+              this.q = value
+            })
+            .margin(15)
+          Tabs(){
+            TabContent(){
 
-          }.tabBar('仓库')
-          TabContent(){
-
-          }.tabBar('用户')
+            }.tabBar('仓库')
+            TabContent(){
+              UserListView({q: this.q})
+            }.tabBar('用户')
+          }
         }
       }
     }
