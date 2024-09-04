@@ -8,7 +8,10 @@ import { DerivedNavPathStack } from '../../common/DerivedNavPathStack'
 @Component
 export struct TrendSubView{
 
+  @State page: number = 1
+
   @State isRefreshing: boolean = false
+  @State isFooterRefreshing:boolean = false
 
   @Prop type: string = ''
 
@@ -44,9 +47,12 @@ export struct TrendSubView{
           .edgeEffect(EdgeEffect.Spring) // 边缘效果设置为Spring
           .width('100%')
           .height('100%')
+          .onReachEnd(() =>{
+            this.footerRefresh()
+          })
         }
         .onRefreshing(() => {
-          this.getStars()
+          this.headerRefresh()
         })
         .refreshOffset(64)
         .pullToRefresh(true)
@@ -59,23 +65,43 @@ export struct TrendSubView{
     .width('100%')
     .height('100%')
     .onAppear(() => {
-      this.getStars()
+      this.headerRefresh()
     })
   }
 
-  getStars() {
+  headerRefresh(){
+    this.page = 1
+    this.getProjects()
+  }
+
+  footerRefresh(){
+    if (this.isFooterRefreshing) {
+      return
+    }
+    this.isFooterRefreshing = true
+    this.page ++
+    this.getProjects()
+  }
+
+  getProjects() {
     const session = rcp.createSession()
-    session.get(`https://gitee.com/api/v3/projects/${this.type}`).then((response) => {
+    session.get(`https://gitee.com/api/v3/projects/${this.type}?page=${this.page}`).then((response) => {
       console.info(`Response succeeded: ${response}`);
       let jsonStr = response.toString()
       if (jsonStr != null) {
         let result: Array<RepoModel> = JSON.parse(jsonStr)
-        this.repos = result
+        if (this.page == 1) {
+          this.repos = result
+        }else{
+          this.repos.push(...result)
+        }
       }
       this.isRefreshing = false
+      this.isFooterRefreshing = false
     }).catch((err: BusinessError) => {
       console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
       this.isRefreshing = false
+      this.isFooterRefreshing = false
     })
   }
 }

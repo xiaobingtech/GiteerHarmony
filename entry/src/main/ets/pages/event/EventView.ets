@@ -10,6 +10,8 @@ export struct EventView{
 
   @State isRefreshing: boolean = false
 
+  @State prev_id: number = 0
+
   @State events: Array<EventModel> = []
 
   private derivedStack: DerivedNavPathStack | null = null
@@ -42,6 +44,9 @@ export struct EventView{
             .edgeEffect(EdgeEffect.Spring) // 边缘效果设置为Spring
             .width('100%')
             .height('100%')
+            .onReachEnd(() =>{
+              this.getEvents()
+            })
           }
           .onRefreshing(() => {
             this.getEvents()
@@ -69,13 +74,21 @@ export struct EventView{
     let userData = preferences.getPreferencesSync(getContext(this), { name: 'user.db' })
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
     let url = `https://gitee.com/api/v5/users/${userData.getSync('login', '')}/received_events?access_token=${tokenData.getSync('access_token', '')}&limit=100`
+    if (this.prev_id != 0) {
+      url = url +`&prev_id=${this.prev_id}`
+    }
     console.log('当前URL:',url)
     session.get(url).then((response) => {
       console.info(`Response succeeded: ${response}`);
       let jsonStr = response.toString()
       if (jsonStr != null) {
         let result: Array<EventModel> = JSON.parse(jsonStr)
-        this.events = result
+        if (this.prev_id == 0) {
+          this.events = result
+        }else{
+          this.events.push(...result)
+        }
+        this.prev_id = result[result.length - 1].id
       }
       this.isRefreshing = false
     }).catch((err: BusinessError) => {
