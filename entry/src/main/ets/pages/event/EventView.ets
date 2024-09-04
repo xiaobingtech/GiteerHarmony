@@ -8,6 +8,8 @@ import { EventItem } from './EventItem'
 @Component
 export struct EventView{
 
+  @State isRefreshing: boolean = false
+
   @State events: Array<EventModel> = []
 
   private derivedStack: DerivedNavPathStack | null = null
@@ -20,25 +22,32 @@ export struct EventView{
     Navigation(){
       Column(){
         if (this.events.length > 0) {
-          List(){
-            ForEach(this.events, (item: EventModel) => {
-              EventItem({ item: item })
-                .onClick(() => {
-                  if (this.derivedStack != null) {
-                    if (this.derivedStack.size() == 0) {
+          Refresh({refreshing: $$this.isRefreshing}){
+            List(){
+              ForEach(this.events, (item: EventModel) => {
+                EventItem({ item: item })
+                  .onClick(() => {
+                    if (this.derivedStack != null) {
+                      if (this.derivedStack.size() == 0) {
 
-                    }else{
+                      }else{
 
+                      }
                     }
-                  }
-                })
-            }, (item: EventModel) => item.id.toString())
+                  })
+              }, (item: EventModel) => item.id.toString())
+            }
+            .scrollBar(BarState.Off)
+            .divider({ strokeWidth: 1, color: 0xFAFAFA, startMargin: 0, endMargin: 0 }) // 每行之间的分界线
+            .edgeEffect(EdgeEffect.Spring) // 边缘效果设置为Spring
+            .width('100%')
+            .height('100%')
           }
-          .scrollBar(BarState.Off)
-          .divider({ strokeWidth: 1, color: 0xFAFAFA, startMargin: 0, endMargin: 0 }) // 每行之间的分界线
-          .edgeEffect(EdgeEffect.Spring) // 边缘效果设置为Spring
-          .width('100%')
-          .height('100%')
+          .onRefreshing(() => {
+            this.getEvents()
+          })
+          .refreshOffset(64)
+          .pullToRefresh(true)
         }else{
           LoadingProgress()
             .width(100)
@@ -68,8 +77,10 @@ export struct EventView{
         let result: Array<EventModel> = JSON.parse(jsonStr)
         this.events = result
       }
+      this.isRefreshing = false
     }).catch((err: BusinessError) => {
       console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
+      this.isRefreshing = false
     })
   }
 }

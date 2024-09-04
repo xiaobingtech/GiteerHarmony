@@ -9,6 +9,8 @@ import { RepoModel } from '../../model/RepoModel'
 @Component
 export struct StarView{
 
+  @State isRefreshing: boolean = false
+
   @State repos: Array<RepoModel> = []
 
   private derivedStack: DerivedNavPathStack | null = null
@@ -21,25 +23,32 @@ export struct StarView{
     Navigation(){
       Column(){
         if (this.repos.length > 0) {
-          List(){
-            ForEach(this.repos, (item: RepoModel) => {
-              StarItem({ item: item })
-                .onClick(() => {
-                  if (this.derivedStack != null) {
-                    if (this.derivedStack.size() == 0) {
-                      this.derivedStack.pushPath({name: 'RepoPage', param: item.full_name})
-                    }else{
-                      this.derivedStack.replacePath({name: 'RepoPage', param: item.full_name})
+          Refresh({refreshing: $$this.isRefreshing}){
+            List(){
+              ForEach(this.repos, (item: RepoModel) => {
+                StarItem({ item: item })
+                  .onClick(() => {
+                    if (this.derivedStack != null) {
+                      if (this.derivedStack.size() == 0) {
+                        this.derivedStack.pushPath({name: 'RepoPage', param: item.full_name})
+                      }else{
+                        this.derivedStack.replacePath({name: 'RepoPage', param: item.full_name})
+                      }
                     }
-                  }
-                })
-            }, (item: RepoModel) => item.name)
+                  })
+              }, (item: RepoModel) => item.name)
+            }
+            .scrollBar(BarState.Off)
+            .divider({ strokeWidth: 1, color: 0xFAFAFA, startMargin: 0, endMargin: 0 }) // 每行之间的分界线
+            .edgeEffect(EdgeEffect.Spring) // 边缘效果设置为Spring
+            .width('100%')
+            .height('100%')
           }
-          .scrollBar(BarState.Off)
-          .divider({ strokeWidth: 1, color: 0xFAFAFA, startMargin: 0, endMargin: 0 }) // 每行之间的分界线
-          .edgeEffect(EdgeEffect.Spring) // 边缘效果设置为Spring
-          .width('100%')
-          .height('100%')
+          .onRefreshing(() => {
+            this.getStars()
+          })
+          .refreshOffset(64)
+          .pullToRefresh(true)
         }else{
           LoadingProgress()
             .width(100)
@@ -69,8 +78,10 @@ export struct StarView{
         let result: Array<RepoModel> = JSON.parse(jsonStr)
         this.repos = result
       }
+      this.isRefreshing = false
     }).catch((err: BusinessError) => {
       console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
+      this.isRefreshing = false
     })
   }
 }

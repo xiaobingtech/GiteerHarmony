@@ -8,6 +8,8 @@ import { preferences } from '@kit.ArkData'
 @Component
 export struct UserListView{
 
+  @State isRefreshing: boolean = false
+
   @Prop @Watch('getUsers') q:string
 
   @State users: Array<UserModel> = []
@@ -21,25 +23,32 @@ export struct UserListView{
   build() {
     Row() {
       Column() {
-        List(){
-          ForEach(this.users, (item: UserModel) => {
-            UserItem({ item: item })
-              .onClick(() => {
-                if (this.derivedStack != null) {
-                  if (this.derivedStack.size() == 0) {
+        Refresh({refreshing:$$this.isRefreshing}){
+          List(){
+            ForEach(this.users, (item: UserModel) => {
+              UserItem({ item: item })
+                .onClick(() => {
+                  if (this.derivedStack != null) {
+                    if (this.derivedStack.size() == 0) {
 
-                  }else{
+                    }else{
 
+                    }
                   }
-                }
-              })
-          }, (item: UserModel) => item.name)
+                })
+            }, (item: UserModel) => item.name)
+          }
+          .scrollBar(BarState.Off)
+          .divider({ strokeWidth: 1, color: 0xFAFAFA, startMargin: 0, endMargin: 0 }) // 每行之间的分界线
+          .edgeEffect(EdgeEffect.Spring) // 边缘效果设置为Spring
+          .width('100%')
+          .height('100%')
         }
-        .scrollBar(BarState.Off)
-        .divider({ strokeWidth: 1, color: 0xFAFAFA, startMargin: 0, endMargin: 0 }) // 每行之间的分界线
-        .edgeEffect(EdgeEffect.Spring) // 边缘效果设置为Spring
-        .width('100%')
-        .height('100%')
+        .onRefreshing(() => {
+          this.getUsers()
+        })
+        .refreshOffset(64)
+        .pullToRefresh(true)
       }
     }
     .width('100%')
@@ -60,8 +69,10 @@ export struct UserListView{
         let result: Array<UserModel> = JSON.parse(jsonStr)
         this.users = result
       }
+      this.isRefreshing = false
     }).catch((err: BusinessError) => {
       console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
+      this.isRefreshing = false
     })
   }
 }

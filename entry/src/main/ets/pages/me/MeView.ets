@@ -31,23 +31,40 @@ export struct MeView{
           .padding(15)
           Divider()
           Row() {
-            Text(`仓库\n${this.item?.public_repos}`)
-              .align(Alignment.Center)
+            Column(){
+              Text('仓库')
+              Text(`${this.item?.public_repos}`)
+            }
+            .layoutWeight(1)
+            .align(Alignment.Center)
             Divider()
               .vertical(true)
-            Text(`Watched\n${this.item?.watched}`)
-              .align(Alignment.Center)
+            Column(){
+              Text('Watched')
+              Text(`${this.item?.watched}`)
+            }
+            .layoutWeight(1)
+            .align(Alignment.Center)
             Divider()
               .vertical(true)
-            Text(`粉丝\n${this.item?.followers}`)
-              .align(Alignment.Center)
+            Column(){
+              Text('关注')
+              Text(`${this.item?.following}`)
+            }
+            .layoutWeight(1)
+            .align(Alignment.Center)
             Divider()
               .vertical(true)
-            Text(`关注\n${this.item?.following}`)
-              .align(Alignment.Center)
+            Column(){
+              Text('粉丝')
+              Text(`${this.item?.followers}`)
+            }
+            .layoutWeight(1)
+            .align(Alignment.Center)
             Divider()
               .vertical(true)
           }
+          .width('100%')
           .height(50)
           Divider()
           Text('退出登录')
