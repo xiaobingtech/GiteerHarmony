@@ -47,12 +47,20 @@ export interface Commit {
 
 export interface Payload {
   ref: string;
+  ref_type: string;
+  action: string;
+  target: Target
+  title: string;
   before: string;
   after: string;
   created: boolean;
   deleted: boolean;
   size: number;
   commits: Commit[];
+}
+
+export interface Target {
+  name: string
 }
 
 export interface EventModel {
