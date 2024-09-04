@@ -1,6 +1,20 @@
 {
   "app": {
-    "signingConfigs": [],
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "storePassword": "0000001C7BE8C7022F82D129098910CD22FAC204B7CF519084A9476FD0B3565DE291E4CC8C0B57000CA4EE0A",
+          "certpath": "D:/Users/fando/Downloads/dis.cer",
+          "keyAlias": "key",
+          "keyPassword": "0000001C3202FFE5BFBF7CF3CFCB52257A466D12433887739E4DF896245FEBE3CD9DA2B9B43D4A3B95D0E06E",
+          "profile": "D:/Users/fando/Downloads/disRelease.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "D:/Users/fando/Documents/GitHub/GiteerHarmony/dis.p12"
+        }
+      }
+    ],
     "products": [
       {
         "name": "default",
