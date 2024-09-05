@@ -39,12 +39,26 @@ export struct RepoTreePage {
           this.getContents(item.path, callbackParam.currentNodeId)
         }else{
           //打开文件
-          let strings = item.download_url.split('.')
-          let suffix = strings[strings.length - 1]
+          let strings = item.download_url.split('/')
+          let fileName = strings[strings.length - 1]
+          let fileNameStrs = fileName.split('.')
+          let suffix = fileNameStrs[fileNameStrs.length - 1]
+          let encodeUrl = encodeURIComponent(fileName)
+
+          // 获取除最后一个元素外的所有元素
+          let reducedArray: string[] = strings.slice(0, strings.length - 1);
+
+          // 将剩下的元素以 "/" 拼接
+          let joinedString: string = reducedArray.join("/");
+
+          // 将剩下的元素和字符串B用 "/" 拼接
+          let result: string = joinedString + "/" + encodeUrl;
+
+
           if (suffix == 'jpg' || suffix == 'png') {
             
           }else if (suffix == 'mp4') {
-            this.derivedStack?.pushPath({name:'VideoView', param: item.download_url})
+            this.derivedStack?.pushPath({name:'VideoView', param: result})
           }
         }
       }else{

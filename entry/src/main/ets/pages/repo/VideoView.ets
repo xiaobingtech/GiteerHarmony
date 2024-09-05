@@ -24,7 +24,7 @@ export struct VideoView {
           .autoPlay(true)
           .objectFit(ImageFit.Auto)
           .width('100%')
-          .height('100%')
+          .height(300)
           .onStart(() => {
             console.info('onStart')
           })
@@ -48,5 +48,6 @@ export struct VideoView {
       this.url = context.pathInfo.param as string
       this.derivedStack = context.pathStack as DerivedNavPathStack
     })
+    .title(this.url)
   }
 }
