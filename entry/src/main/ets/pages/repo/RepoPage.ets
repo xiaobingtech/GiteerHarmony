@@ -7,6 +7,7 @@ import { RepoModel } from '../../model/RepoModel';
 import { ReadmeModel } from '../../model/ReadmeModel';
 import { Base64 } from '@ohos/base64';
 import { lvMarkdownIn } from '@luvi/lv-markdown-in'
+import util from '@ohos.util';
 
 
 @Builder
@@ -19,6 +20,7 @@ export struct RepoPage {
   @State item: RepoModel|null = null
   @State name: string = ''
   @State readme: ReadmeModel|null = null
+  @State content: string = ''
 
   private derivedStack: DerivedNavPathStack | null = null;
 
@@ -104,7 +106,8 @@ export struct RepoPage {
             .padding(15)
             Divider()
             if (this.readme != null) {
-              lvMarkdownIn({text: Base64.bytesToString(Base64.decode(this.readme?.content))})
+              lvMarkdownIn({text: this.content})
+                .padding(15)
             }
           }
         }
@@ -154,6 +157,20 @@ export struct RepoPage {
       if (jsonStr != null) {
         let result: ReadmeModel = JSON.parse(jsonStr)
         this.readme = result
+
+        let textDecoderOptions: util.TextDecoderOptions = {
+          fatal: false,
+          ignoreBOM : true
+        }
+        let decodeToStringOptions: util.DecodeToStringOptions = {
+          stream: false
+        }
+        let textDecoder = util.TextDecoder.create('utf-8', textDecoderOptions);
+        let resultA = Base64.decode(this.readme?.content);
+        let retStr = textDecoder.decodeToString(resultA, decodeToStringOptions);
+
+        this.content = retStr
+        console.log('README:', retStr)
       }
     }).catch((err: BusinessError) => {
       console.error(`Response err: Code is ${err.code}, message is ${err.message}`);

@@ -4,7 +4,6 @@
   "dependencies": {
     "@luvi/lv-markdown-in": "^2.0.1",
     "@ohos/base64": "^2.0.0",
-    "@yunkss/ef_core": "^1.0.2"
   },
   "devDependencies": {
     "@ohos/hypium": "1.0.18",

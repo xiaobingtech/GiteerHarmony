@@ -11,3 +11,4 @@
 **/.test
 /.appanalyzer
 material/
+build-profile.json5
