@@ -13,4 +13,5 @@ export interface RepoTreeModel {
   html_url: string;
   download_url: string;
   _links: Link;
+  child: Array<RepoTreeModel>;
 }

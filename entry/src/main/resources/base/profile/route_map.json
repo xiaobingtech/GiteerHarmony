@@ -9,6 +9,11 @@
       "name": "RepoTreePage",
       "pageSourceFile": "src/main/ets/pages/repo/RepoTreePage.ets",
       "buildFunction": "RepoTreePageBuilder"
+    },
+    {
+      "name": "VideoView",
+      "pageSourceFile": "src/main/ets/pages/repo/VideoView.ets",
+      "buildFunction": "VideoViewBuilder"
     }
   ]
 }

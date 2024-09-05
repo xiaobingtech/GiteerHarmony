@@ -6,6 +6,8 @@ import { rcp } from '@kit.RemoteCommunicationKit';
 import { preferences } from '@kit.ArkData';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { RepoTreeModel } from '../../model/RepoTreeModel';
+import call from '@ohos.telephony.call';
+import { util } from '@kit.ArkTS';
 
 @Builder
 export function RepoTreePageBuilder(name: string, param: Object) {
@@ -24,18 +26,42 @@ export struct RepoTreePage {
   private treeListener: TreeListener = TreeListenerManager.getInstance().getTreeListener();
   @State clickNodeId: number = 0;
 
+  @State result: Array<RepoTreeModel> = []
+
   aboutToAppear(): void {
     this.treeListener.on(TreeListenType.NODE_CLICK, (callbackParam: CallbackParam) => {
       this.clickNodeId = callbackParam.currentNodeId;
+      console.log('NODE_CLICK')
+      if (callbackParam.parentNodeId == undefined) {
+        //父节点下得
+        let item = this.result[callbackParam.currentNodeId - 1]
+        if (item.type == 'dir') {
+          this.getContents(item.path, callbackParam.currentNodeId)
+        }else{
+          //打开文件
+          let strings = item.download_url.split('.')
+          let suffix = strings[strings.length - 1]
+          if (suffix == 'jpg' || suffix == 'png') {
+            
+          }else if (suffix == 'mp4') {
+            this.derivedStack?.pushPath({name:'VideoView', param: item.download_url})
+          }
+        }
+      }else{
+
+      }
     })
     this.treeListener.on(TreeListenType.NODE_ADD, (callbackParam: CallbackParam) => {
       this.clickNodeId = callbackParam.currentNodeId;
+      console.log('NODE_ADD')
     })
     this.treeListener.on(TreeListenType.NODE_DELETE, (callbackParam: CallbackParam) => {
       this.clickNodeId = callbackParam.currentNodeId;
+      console.log('NODE_DELETE')
     })
     this.treeListener.once(TreeListenType.NODE_MOVE, (callbackParam: CallbackParam) => {
       this.clickNodeId = callbackParam.currentNodeId;
+      console.log('NODE_MOVE')
     })
   }
 
@@ -77,7 +103,7 @@ export struct RepoTreePage {
     .title('仓库Tree')
   }
 
-  getContents(path: string) {
+  getContents(path: string, parentNodeId:number = -1, item: RepoTreeModel|null = null) {
     const session = rcp.createSession()
     // https://gitee.com/api/v5/users/fandongtongxue_admin/starred?access_token=8b54574d49a35d59fcbff25c54d3e934&limit=20&sort=created&direction=desc
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
@@ -90,10 +116,15 @@ export struct RepoTreePage {
         let result: Array<RepoTreeModel> = JSON.parse(jsonStr)
         for (let i = 0; i < result.length; i++) {
           let item = result[i]
-          this.treeController.addNode({parentNodeId: -1, currentNodeId: i +1, isFolder: item.type == 'dir', icon: item.type == 'dir' ? $r('app.media.folder') : $r('app.media.file'), selectedIcon: item.type == 'dir' ? $r('app.media.folder') : $r('app.media.file'), primaryTitle: item.name})
+          this.treeController.addNode({parentNodeId: parentNodeId, currentNodeId: i +1, isFolder: item.type == 'dir', icon: item.type == 'dir' ? $r('app.media.folder') : $r('app.media.file'), selectedIcon: item.type == 'dir' ? $r('app.media.folder') : $r('app.media.file'), primaryTitle: item.name})
+        }
+        if (item == null) {
+          this.result = result
+        }else{
+          item.child = result
         }
         this.treeController.buildDone()
-        this.treeController.refreshNode(-1, '父节点', '子节点')
+        this.treeController.refreshNode(parentNodeId, '父节点', '子节点')
         this.isLoading = false
       }
     }).catch((err: BusinessError) => {

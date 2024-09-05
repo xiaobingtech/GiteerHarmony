@@ -19,6 +19,7 @@ export function RepoPageBuilder(name: string, param: Object) {
 export struct RepoPage {
   @State item: RepoModel|null = null
   @State name: string = ''
+  @State ref: string = ''
   @State readme: ReadmeModel|null = null
   @State content: string = ''
 
@@ -140,7 +141,9 @@ export struct RepoPage {
       if (jsonStr != null) {
         let result: RepoModel = JSON.parse(jsonStr)
         this.item = result
+        this.ref = result.default_branch
       }
+
     }).catch((err: BusinessError) => {
       console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
     })
@@ -168,9 +171,7 @@ export struct RepoPage {
         let textDecoder = util.TextDecoder.create('utf-8', textDecoderOptions);
         let resultA = Base64.decode(this.readme?.content);
         let retStr = textDecoder.decodeToString(resultA, decodeToStringOptions);
-
         this.content = retStr
-        console.log('README:', retStr)
       }
     }).catch((err: BusinessError) => {
       console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
