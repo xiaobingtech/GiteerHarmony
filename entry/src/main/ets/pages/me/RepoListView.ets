@@ -1,13 +1,19 @@
-import { StarItem } from './StarItem'
 import { rcp } from '@kit.RemoteCommunicationKit'
-import { preferences } from '@kit.ArkData'
-import { BusinessError } from '@kit.BasicServicesKit'
 import { DerivedNavPathStack } from '../../common/DerivedNavPathStack'
 import { RepoModel } from '../../model/RepoModel'
+import { StarItem } from '../star/StarItem'
+import { preferences } from '@kit.ArkData'
+import { BusinessError } from '@kit.BasicServicesKit'
 
+@Builder
+export function RepoListViewBuilder(name: string, param: Object) {
+  RepoListView()
+}
 
 @Component
-export struct StarView{
+export struct RepoListView{
+
+  @State type: string = 'repos'
 
   @State page: number = 1
 
@@ -18,12 +24,8 @@ export struct StarView{
 
   private derivedStack: DerivedNavPathStack | null = null
 
-  aboutToAppear(): void {
-    this.derivedStack = AppStorage.get('derivedStack') as DerivedNavPathStack
-  }
-
   build() {
-    Navigation(){
+    NavDestination(){
       Column(){
         if (this.repos.length > 0) {
           Refresh({refreshing: $$this.isRefreshing}){
@@ -64,7 +66,11 @@ export struct StarView{
       .width('100%')
       .height('100%')
     }
-    .title('Star')
+    .title('仓库')
+    .onReady((context) => {
+      this.type = context.pathInfo.param as string
+      this.derivedStack = context.pathStack as DerivedNavPathStack
+    })
     .onAppear(() => {
       this.headerRefresh()
     })
@@ -72,7 +78,7 @@ export struct StarView{
 
   headerRefresh(){
     this.page = 1
-    this.getStars()
+    this.getRepos()
   }
 
   footerRefresh(){
@@ -81,15 +87,15 @@ export struct StarView{
     }
     this.isFooterRefreshing = true
     this.page ++
-    this.getStars()
+    this.getRepos()
   }
 
-  getStars() {
+  getRepos() {
     const session = rcp.createSession()
-    // https://gitee.com/api/v5/users/fandongtongxue_admin/starred?access_token=8b54574d49a35d59fcbff25c54d3e934&limit=20&sort=created&direction=desc
+    // https://gitee.com/api/v5/users/fandongtongxue_admin/repos?access_token=8b54574d49a35d59fcbff25c54d3e934&limit=20&sort=created&direction=desc
     let userData = preferences.getPreferencesSync(getContext(this), { name: 'user.db' })
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
-    let url = `https://gitee.com/api/v5/users/${userData.getSync('login', '')}/starred?access_token=${tokenData.getSync('access_token', '')}&perpage=100&sort=created&direction=desc&page=${this.page}`
+    let url = `https://gitee.com/api/v5/users/${userData.getSync('login', '')}/${this.type}?access_token=${tokenData.getSync('access_token', '')}&perpage=100&direction=desc&page=${this.page}`
     console.log('当前URL:',url)
     session.get(url).then((response) => {
       console.info(`Response succeeded: ${response}`);

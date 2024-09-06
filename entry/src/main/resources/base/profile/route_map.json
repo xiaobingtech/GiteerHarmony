@@ -39,6 +39,11 @@
       "name": "SettingView",
       "pageSourceFile": "src/main/ets/pages/me/SettingView.ets",
       "buildFunction": "SettingViewBuilder"
+    },
+    {
+      "name": "RepoListView",
+      "pageSourceFile": "src/main/ets/pages/me/RepoListView.ets",
+      "buildFunction": "RepoListViewBuilder"
     }
   ]
 }

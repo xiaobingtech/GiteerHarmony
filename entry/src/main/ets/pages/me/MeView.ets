@@ -44,6 +44,11 @@ export struct MeView{
             }
             .layoutWeight(1)
             .align(Alignment.Center)
+            .onClick(() => {
+              if (this.derivedStack) {
+                this.derivedStack.pushPath({name: 'RepoListView', param: 'repos'})
+              }
+            })
             Divider()
               .vertical(true)
             Column(){
@@ -52,6 +57,11 @@ export struct MeView{
             }
             .layoutWeight(1)
             .align(Alignment.Center)
+            .onClick(() => {
+              if (this.derivedStack) {
+                this.derivedStack.pushPath({name: 'RepoListView', param: 'subscriptions'})
+              }
+            })
             Divider()
               .vertical(true)
             Column(){
