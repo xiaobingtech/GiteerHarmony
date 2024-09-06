@@ -95,6 +95,57 @@ export struct RepoView {
             .padding(15)
             Divider()
             Row(){
+              Text('Commit')
+              Blank()
+              SymbolGlyph($r('sys.symbol.chevron_right'))
+            }
+            .onClick(() => {
+              if (this.derivedStack) {
+                this.derivedStack.pushPath({name: 'CommitView', param: this.item?.full_name})
+              }
+            })
+            .width('100%')
+            .height(44)
+            .padding(15)
+            Divider()
+            Row(){
+              Text('Issue')
+              Blank()
+              SymbolGlyph($r('sys.symbol.chevron_right'))
+            }
+            .onClick(() => {
+              if (this.derivedStack) {
+                this.derivedStack.pushPath({name: 'IssueView', param: this.item})
+              }
+            })
+            .width('100%')
+            .height(44)
+            .padding(15)
+            Divider()
+            Row(){
+              Text('Pull Request')
+              Blank()
+              SymbolGlyph($r('sys.symbol.chevron_right'))
+            }
+            .onClick(() => {
+              if (this.derivedStack) {
+                this.derivedStack.pushPath({name: 'PullRequestView', param: this.item})
+              }
+            })
+            .width('100%')
+            .height(44)
+            .padding(15)
+            Divider()
+            Row(){
+              Text('Branch')
+              Blank()
+              SymbolGlyph($r('sys.symbol.chevron_right'))
+            }
+            .width('100%')
+            .height(44)
+            .padding(15)
+            Divider()
+            Row(){
               Text('README')
               Blank()
               SymbolGlyph($r('sys.symbol.arrow_clockwise'))

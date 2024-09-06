@@ -19,6 +19,11 @@
       "name": "WebView",
       "pageSourceFile": "src/main/ets/pages/WebView.ets",
       "buildFunction": "WebViewBuilder"
+    },
+    {
+      "name": "CommitView",
+      "pageSourceFile": "src/main/ets/pages/repo/commit/CommitView.ets",
+      "buildFunction": "CommitViewBuilder"
     }
   ]
 }
