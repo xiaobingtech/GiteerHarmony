@@ -9,6 +9,7 @@ export function VideoViewBuilder(name: string, param: Object) {
 export struct VideoView {
 
   @State url: string = ''
+  @State title: string = ''
 
   derivedStack: DerivedNavPathStack | null = null;
 
@@ -40,6 +41,12 @@ export struct VideoView {
           .onStop(() => {
             console.info('onStop')
           })
+          .onSeeking((value) =>{
+            console.log('onSeeking', value.time)
+          })
+          .onSeeked((value) =>{
+            console.log('onSeeked', value.time)
+          })
       }
       .width('100%')
       .height('100%')
@@ -47,7 +54,12 @@ export struct VideoView {
     .onReady((context) =>{
       this.url = context.pathInfo.param as string
       this.derivedStack = context.pathStack as DerivedNavPathStack
+
+      let strings = this.url.split('/')
+      let fileName = strings[strings.length - 1]
+      this.title = decodeURIComponent(fileName)
+
     })
-    .title(this.url)
+    .title(this.title)
   }
 }
