@@ -4,7 +4,8 @@
   "dependencies": {
     "@luvi/lv-markdown-in": "^2.0.1",
     "@ohos/base64": "^2.0.0",
-    "@rv/image-preview": "^1.0.8"
+    "@rv/image-preview": "^1.0.8",
+    "@changwei/chatui": "^0.0.6"
   },
   "devDependencies": {
     "@ohos/hypium": "1.0.18",
