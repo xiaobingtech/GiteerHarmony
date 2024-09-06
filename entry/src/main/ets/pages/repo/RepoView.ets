@@ -111,6 +111,8 @@ export struct RepoView {
             Row(){
               Text('Issue')
               Blank()
+              Text(`${this.item?.open_issues_count}`)
+              Blank().width(15)
               SymbolGlyph($r('sys.symbol.chevron_right'))
             }
             .onClick(() => {
@@ -129,7 +131,7 @@ export struct RepoView {
             }
             .onClick(() => {
               if (this.derivedStack) {
-                this.derivedStack.pushPath({name: 'PullRequestView', param: this.item})
+                this.derivedStack.pushPath({name: 'PullRequestView', param: this.item?.full_name})
               }
             })
             .width('100%')

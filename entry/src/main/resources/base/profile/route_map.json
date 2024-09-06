@@ -29,6 +29,11 @@
       "name": "IssueView",
       "pageSourceFile": "src/main/ets/pages/repo/issue/IssueView.ets",
       "buildFunction": "IssueViewBuilder"
+    },
+    {
+      "name": "PullRequestView",
+      "pageSourceFile": "src/main/ets/pages/repo/pr/PullRequestView.ets",
+      "buildFunction": "PullRequestViewBuilder"
     }
   ]
 }
