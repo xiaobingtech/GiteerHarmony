@@ -20,6 +20,28 @@ export struct EventView{
     this.derivedStack = AppStorage.get('derivedStack') as DerivedNavPathStack
   }
 
+  onClickRepo(item: EventModel): void {
+    if (this.derivedStack != null) {
+      if (this.derivedStack.size() == 0) {
+        this.derivedStack.pushPath({name: 'RepoView', param: item.repo.full_name})
+      }else{
+        this.derivedStack.replacePath({name: 'RepoView', param: item.repo.full_name})
+      }
+    }
+  }
+
+  onClickCommit(item: EventModel): void {
+    // https://gitee.com/harmonyos_codelabs/car-kit-codelab-arkts/commit/169ccb181c0d8a67dc69f774faf13a22fefd8555
+    let url = `https://gitee.com/${item.repo.full_name}/commit/${item.payload.commits[0].sha}`
+    if (this.derivedStack != null) {
+      if (this.derivedStack.size() == 0) {
+        this.derivedStack.pushPath({name: 'WebView', param: url})
+      }else{
+        this.derivedStack.replacePath({name: 'WebView', param: url})
+      }
+    }
+  }
+
   build() {
     Navigation(){
       Column(){
@@ -27,16 +49,7 @@ export struct EventView{
           Refresh({refreshing: $$this.isRefreshing}){
             List(){
               ForEach(this.events, (item: EventModel) => {
-                EventItem({ item: item })
-                  .onClick(() => {
-                    if (this.derivedStack != null) {
-                      if (this.derivedStack.size() == 0) {
-
-                      }else{
-
-                      }
-                    }
-                  })
+                EventItem({ item: item, repoClick: () => this.onClickRepo(item), commitClick: () => this.onClickCommit(item)})
               }, (item: EventModel) => item.id.toString())
             }
             .scrollBar(BarState.Off)

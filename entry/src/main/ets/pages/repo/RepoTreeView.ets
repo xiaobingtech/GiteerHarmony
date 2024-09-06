@@ -42,12 +42,12 @@ export struct RepoTreeView {
                     .width(22)
                   Blank().width(15)
                   Text(item.name)
+                    .width('calc(100% - 67vp)')
                   Blank()
                   if (item.type == 'dir') {
                     SymbolGlyph($r('sys.symbol.chevron_right'))
                   }
                 }
-                .alignItems(VerticalAlign.Center)
                 .height(44)
                 .padding(15)
                 .onClick((event) =>{

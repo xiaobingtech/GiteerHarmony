@@ -1,9 +1,51 @@
 import { EventModel } from '../../model/EventModel';
 import { SpanModifier } from '@kit.ArkUI';
+import { DerivedNavPathStack } from '../../common/DerivedNavPathStack';
 
 @Component
 export struct EventItem {
-  @Prop item: EventModel|null = null;
+
+  private derivedStack: DerivedNavPathStack | null = null
+
+  aboutToAppear(): void {
+    this.derivedStack = AppStorage.get('derivedStack') as DerivedNavPathStack
+  }
+
+  repoClick: (item: EventModel) => void = () => {
+
+  }
+
+  commitClick: (item: EventModel) => void = () => {
+
+  }
+
+  @Builder
+  repoBuilder(){
+    Span(this.item.repo.human_name)
+    .fontColor(Color.Blue)
+    .onClick(() =>{
+      this.repoClick(this.item)
+    })
+  }
+  @Builder
+  refBuilder(){
+    Span(this.item.payload.ref.split('/').pop())
+      .fontColor(Color.Blue)
+      .onClick(() =>{
+        this.repoClick(this.item)
+      })
+  }
+
+  @Builder
+  commitBuilder(){
+    Span(this.item.payload.commits[0].sha.substring(0, 7))
+      .fontColor(Color.Blue)
+      .onClick(() =>{
+        this.commitClick(this.item)
+      })
+  }
+
+  @Prop item: EventModel;
   build() {
     Row({space: 15}){
       Image(this.item?.actor.avatar_url)
@@ -16,40 +58,40 @@ export struct EventItem {
           Span('推送到了')
           Span(' ')
           if (this.item.payload.commits.length > 0) {
-            Span(this.item.repo.full_name)
+            this.repoBuilder()
             Span(' 的')
-            Span(this.item.payload.ref)
+            this.refBuilder()
             Span(' 分支')
-            Span(this.item.payload.commits[0].sha.substring(0, 7))
+            this.commitBuilder()
             Span(' ')
             Span(this.item.payload.commits[0].message)
           }else{
-            Span(this.item.repo.full_name)
+            this.repoBuilder()
             Span(' 的')
-            Span(this.item.payload.ref)
+            this.refBuilder()
             Span(' 分支')
           }
         }else if (this.item?.type == 'MemberEvent'){
           Span('加入了仓库 ')
-          Span(this.item.repo.full_name)
+          this.repoBuilder()
         }else if (this.item?.type == 'CreateEvent'){
           Span('创建了仓库 ')
           if (this.item.payload.ref_type == 'branch') {
-            Span(this.item.repo.full_name)
+            this.repoBuilder()
             Span(' 的')
-            Span(this.item.payload.ref)
+            this.refBuilder()
             Span(' 分支')
           }else{
-            Span(this.item.repo.full_name)
+            this.repoBuilder()
           }
         }else if (this.item?.type == 'IssueCommentEvent'){
           Span('发表了新的任务评论')
         }else if (this.item?.type == 'StarEvent'){
           Span('Star了仓库 ')
-          Span(this.item.repo.full_name)
+          this.repoBuilder()
         }else if (this.item?.type == 'ForkEvent'){
           Span('Fork了仓库 ')
-          Span(this.item.repo.full_name)
+          this.repoBuilder()
         }else if (this.item?.type == 'FollowEvent'){
           Span('关注了 ')
           Span(this.item.payload.target.name)

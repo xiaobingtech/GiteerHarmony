@@ -43,6 +43,7 @@ export interface Commit {
   author: Author;
   message: string;
   url: string;
+  html_url: string;
 }
 
 export interface Payload {
