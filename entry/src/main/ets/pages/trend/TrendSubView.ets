@@ -34,9 +34,9 @@ export struct TrendSubView{
                 .onClick(() => {
                   if (this.derivedStack != null) {
                     if (this.derivedStack.size() == 0) {
-                      this.derivedStack.pushPath({name: 'RepoPage', param: item.path_with_namespace})
+                      this.derivedStack.pushPath({name: 'RepoView', param: item.path_with_namespace})
                     }else{
-                      this.derivedStack.replacePath({name: 'RepoPage', param: item.path_with_namespace})
+                      this.derivedStack.replacePath({name: 'RepoView', param: item.path_with_namespace})
                     }
                   }
                 })

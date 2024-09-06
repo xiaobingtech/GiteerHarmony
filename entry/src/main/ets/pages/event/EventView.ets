@@ -42,6 +42,33 @@ export struct EventView{
     }
   }
 
+  onClickPull(item: EventModel): void {
+    // https://gitee.com/harmonyos_codelabs/car-kit-codelab-arkts/pull/169ccb181c0d8a67dc69f774faf13a22fefd8555
+    if (this.derivedStack != null) {
+      if (this.derivedStack.size() == 0) {
+        this.derivedStack.pushPath({name: 'WebView', param: item.payload.html_url})
+      }else{
+        this.derivedStack.replacePath({name: 'WebView', param: item.payload.html_url})
+      }
+    }
+  }
+
+  onClickIssue(item: EventModel): void {
+    // https://gitee.com/harmonyos_codelabs/car-kit-codelab-arkts/commit/169ccb181c0d8a67dc69f774faf13a22fefd8555
+    let number = item.payload.number
+    if (number == null) {
+      number = item.payload.issue.number
+    }
+    let url = `https://gitee.com/${item.repo.full_name}/issues/${number}`
+    if (this.derivedStack != null) {
+      if (this.derivedStack.size() == 0) {
+        this.derivedStack.pushPath({name: 'WebView', param: url})
+      }else{
+        this.derivedStack.replacePath({name: 'WebView', param: url})
+      }
+    }
+  }
+
   build() {
     Navigation(){
       Column(){
@@ -49,7 +76,7 @@ export struct EventView{
           Refresh({refreshing: $$this.isRefreshing}){
             List(){
               ForEach(this.events, (item: EventModel) => {
-                EventItem({ item: item, repoClick: () => this.onClickRepo(item), commitClick: () => this.onClickCommit(item)})
+                EventItem({ item: item, repoClick: () => this.onClickRepo(item), commitClick: () => this.onClickCommit(item), pullClick: () => this.onClickPull(item), issueClick: () => this.onClickIssue(item)})
               }, (item: EventModel) => item.id.toString())
             }
             .scrollBar(BarState.Off)
