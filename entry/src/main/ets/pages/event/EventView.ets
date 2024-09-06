@@ -117,7 +117,7 @@ export struct EventView{
     if (this.prev_id != 0) {
       url = url +`&prev_id=${this.prev_id}`
     }
-    console.log('当前URL:',url)
+    console.log('当前请求URL:',url)
     session.get(url).then((response) => {
       console.info(`Response succeeded: ${response}`);
       let jsonStr = response.toString()

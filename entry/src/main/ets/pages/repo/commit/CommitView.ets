@@ -92,7 +92,7 @@ struct CommitView{
     // https://gitee.com/api/v5/repos/GiteerApp/GiteerAndroid/commits?access_token=c3ddaabfcac3e76db1e3200da4021620&page=1&per_page=20
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
     let url = `https://gitee.com/api/v5/repos/${this.name}/commits?access_token=${tokenData.getSync('access_token', '')}&per_page=100&page=${this.page}`
-    console.log('当前URL:',url)
+    console.log('当前请求URL:',url)
     session.get(url).then((response) => {
       console.info(`Response succeeded: ${response}`);
       let jsonStr = response.toString()

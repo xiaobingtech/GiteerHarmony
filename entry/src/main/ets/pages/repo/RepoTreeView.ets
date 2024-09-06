@@ -107,7 +107,7 @@ export struct RepoTreeView {
     // https://gitee.com/api/v5/users/fandongtongxue_admin/starred?access_token=8b54574d49a35d59fcbff25c54d3e934&limit=20&sort=created&direction=desc
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
     let url = `https://gitee.com/api/v5/repos/${this.item?.full_name}/contents/${path}?access_token=${tokenData.getSync('access_token', '')}`
-    console.log('当前URL:',url)
+    console.log('当前请求URL:',url)
     session.get(url).then((response) => {
       console.info(`Response succeeded: ${response}`);
       let jsonStr = response.toString()

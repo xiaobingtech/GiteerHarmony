@@ -6,7 +6,7 @@ import { BusinessError } from '@kit.BasicServicesKit'
 import { preferences } from '@kit.ArkData'
 
 @Component
-export struct UserListView{
+export struct SearchUserListView{
 
   @State page: number = 1
 
@@ -32,11 +32,7 @@ export struct UserListView{
               UserItem({ item: item })
                 .onClick(() => {
                   if (this.derivedStack != null) {
-                    if (this.derivedStack.size() == 0) {
-
-                    }else{
-
-                    }
+                    this.derivedStack.pushPath({name: 'UserView', param: item.login})
                   }
                 })
             }, (item: UserModel) => item.name)
@@ -81,7 +77,7 @@ export struct UserListView{
     let userData = preferences.getPreferencesSync(getContext(this), { name: 'user.db' })
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
     let url = `https://gitee.com/api/v5/search/users?access_token=${tokenData.getSync('access_token', '')}&perpage=100&page=${this.page}&order=desc&q=${this.q}`
-    console.log('当前URL:',url)
+    console.log('当前请求URL:',url)
     session.get(url).then((response) => {
       console.info(`Response succeeded: ${response}`);
       let jsonStr = response.toString()

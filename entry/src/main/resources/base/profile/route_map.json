@@ -44,6 +44,16 @@
       "name": "RepoListView",
       "pageSourceFile": "src/main/ets/pages/me/RepoListView.ets",
       "buildFunction": "RepoListViewBuilder"
+    },
+    {
+      "name": "UserListView",
+      "pageSourceFile": "src/main/ets/pages/me/UserListView.ets",
+      "buildFunction": "UserListViewBuilder"
+    },
+    {
+      "name": "UserView",
+      "pageSourceFile": "src/main/ets/pages/me/UserView.ets",
+      "buildFunction": "UserViewBuilder"
     }
   ]
 }

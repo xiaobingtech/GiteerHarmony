@@ -90,7 +90,7 @@ export struct StarView{
     let userData = preferences.getPreferencesSync(getContext(this), { name: 'user.db' })
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
     let url = `https://gitee.com/api/v5/users/${userData.getSync('login', '')}/starred?access_token=${tokenData.getSync('access_token', '')}&perpage=100&sort=created&direction=desc&page=${this.page}`
-    console.log('当前URL:',url)
+    console.log('当前请求URL:',url)
     session.get(url).then((response) => {
       console.info(`Response succeeded: ${response}`);
       let jsonStr = response.toString()

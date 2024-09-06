@@ -40,7 +40,7 @@ export struct WebView {
             this.progress = data.newProgress
           })
           .onOverrideUrlLoading((request: WebResourceRequest) => {
-            console.log('当前加载的URL:', request.getRequestUrl())
+            console.log('当前加载URL:', request.getRequestUrl())
             if (request.getRequestUrl().startsWith(Constraints.redirect_uri)) {
               let code = request.getRequestUrl().split('code=').pop()
               this.handleCode(code)

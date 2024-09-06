@@ -6,8 +6,13 @@ import { BusinessError } from '@kit.BasicServicesKit'
 import { DerivedNavPathStack } from '../../common/DerivedNavPathStack'
 import { UserListParam } from './UserListView'
 
+@Builder
+export function UserViewBuilder(name: string, param: Object) {
+  UserView()
+}
+
 @Component
-export struct MeView{
+export struct UserView{
 
   @State item: UserModel|null = null
 
@@ -18,7 +23,7 @@ export struct MeView{
   }
 
   build() {
-    Navigation(){
+    NavDestination(){
       Column() {
         if (this.item?.login != '') {
           Row({ space: 15 }) {
@@ -48,8 +53,9 @@ export struct MeView{
             .onClick(() => {
               if (this.derivedStack) {
                 let param = new UserListParam()
-                param.isMe = true
+                param.isMe = false
                 param.type = 'repos'
+                param.login = this.item?.login
                 this.derivedStack.pushPath({name: 'RepoListView', param: param})
               }
             })
@@ -64,8 +70,9 @@ export struct MeView{
             .onClick(() => {
               if (this.derivedStack) {
                 let param = new UserListParam()
-                param.isMe = true
+                param.isMe = false
                 param.type = 'subscriptions'
+                param.login = this.item?.login
                 this.derivedStack.pushPath({name: 'RepoListView', param: param})
               }
             })
@@ -80,8 +87,9 @@ export struct MeView{
             .onClick(() => {
               if (this.derivedStack) {
                 let param = new UserListParam()
-                param.isMe = true
+                param.isMe = false
                 param.type = 'followers'
+                param.login = this.item?.login
                 this.derivedStack.pushPath({name: 'UserListView', param: param})
               }
             })
@@ -98,6 +106,7 @@ export struct MeView{
                 let param = new UserListParam()
                 param.isMe = true
                 param.type = 'following'
+                param.login = this.item?.login
                 this.derivedStack.pushPath({name: 'UserListView', param: param})
               }
             })
@@ -106,20 +115,6 @@ export struct MeView{
           }
           .width('100%')
           .height(50)
-          Divider()
-          Row(){
-            Text('消息通知')
-            Blank()
-            SymbolGlyph($r('sys.symbol.chevron_right'))
-          }
-          .onClick(() => {
-            if (this.derivedStack) {
-
-            }
-          })
-          .width('100%')
-          .height(44)
-          .padding(15)
           Divider()
           Row(){
             Text(this.item?.email)
@@ -131,14 +126,12 @@ export struct MeView{
           .padding(15)
           Divider()
           Row(){
-            Text('设置')
+            Text('私信')
             Blank()
             SymbolGlyph($r('sys.symbol.chevron_right'))
           }
           .onClick(() => {
-            if (this.derivedStack) {
-              this.derivedStack.pushPath({name: 'SettingView'})
-            }
+
           })
           .width('100%')
           .height(44)
@@ -151,26 +144,26 @@ export struct MeView{
         }
       }
     }
+    .onReady((context) => {
+      this.derivedStack = context.pathStack as DerivedNavPathStack
+      this.item = context.pathInfo.param as UserModel
+    })
     .onAppear(() => {
       this.getUser()
     })
-    .title('我的')
+    .title(this.item?.name)
   }
 
   getUser() {
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
     const session = rcp.createSession()
-    let url = "https://gitee.com/api/v5/user?access_token="+tokenData.getSync('access_token', '')
+    let url = `https://gitee.com/api/v5/users/${this.item?.login}?access_token=${tokenData.getSync('access_token', '')}`
     console.log('当前请求URL:', url)
     session.get(url).then((response) => {
       console.info(`Response succeeded: ${response}`);
       let jsonStr = response.toString()
       if (jsonStr != null) {
         let result: UserModel = JSON.parse(jsonStr)
-        //存储数据
-        let data = preferences.getPreferencesSync(getContext(this), { name: 'user.db' })
-        data?.putSync('login', result.login)
-        data?.flush()
         this.item = result
       }
     }).catch((err: BusinessError) => {

@@ -1,5 +1,4 @@
-import { StarView } from '../star/StarView'
-import { UserListView } from './UserListView'
+import { SearchUserListView } from './SearchUserListView'
 
 @Component
 export struct SearchView {
@@ -24,7 +23,7 @@ export struct SearchView {
 
             }.tabBar('仓库')
             TabContent(){
-              UserListView({q: this.q})
+              SearchUserListView({q: this.q})
             }.tabBar('用户')
           }
         }

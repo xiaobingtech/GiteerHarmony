@@ -1,19 +1,23 @@
-import { rcp } from '@kit.RemoteCommunicationKit'
 import { DerivedNavPathStack } from '../../common/DerivedNavPathStack'
-import { RepoModel } from '../../model/RepoModel'
-import { StarItem } from '../star/StarItem'
-import { preferences } from '@kit.ArkData'
+import { UserModel } from '../../model/UserModel'
+import { rcp } from '@kit.RemoteCommunicationKit'
 import { BusinessError } from '@kit.BasicServicesKit'
-import { UserListParam } from './UserListView'
-import { User } from '../../model/EventModel'
+import { preferences } from '@kit.ArkData'
+import { UserItem } from '../search/UserItem'
+
+export class UserListParam {
+  isMe: boolean = false
+  type: string = ''
+  login: string|undefined = ''
+}
 
 @Builder
-export function RepoListViewBuilder(name: string, param: Object) {
-  RepoListView()
+export function UserListViewBuilder(name: string, param: Object) {
+  UserListView()
 }
 
 @Component
-export struct RepoListView{
+export struct UserListView{
 
   @State param: UserListParam|null = null
 
@@ -22,28 +26,30 @@ export struct RepoListView{
   @State isRefreshing: boolean = false
   @State isFooterRefreshing:boolean = false
 
-  @State repos: Array<RepoModel> = []
+  @Prop @Watch('getUsers') q:string
+
+  @State users: Array<UserModel> = []
 
   private derivedStack: DerivedNavPathStack | null = null
 
+  aboutToAppear(): void {
+    this.derivedStack = AppStorage.get('derivedStack') as DerivedNavPathStack
+  }
+
   build() {
     NavDestination(){
-      Column(){
-        if (this.repos.length > 0) {
-          Refresh({refreshing: $$this.isRefreshing}){
+      Row() {
+        Column() {
+          Refresh({refreshing:$$this.isRefreshing}){
             List(){
-              ForEach(this.repos, (item: RepoModel) => {
-                StarItem({ item: item })
+              ForEach(this.users, (item: UserModel) => {
+                UserItem({ item: item })
                   .onClick(() => {
                     if (this.derivedStack != null) {
-                      if (this.derivedStack.size() == 0) {
-                        this.derivedStack.pushPath({name: 'RepoView', param: item.full_name})
-                      }else{
-                        this.derivedStack.replacePath({name: 'RepoView', param: item.full_name})
-                      }
+                      this.derivedStack.pushPath({name: 'UserView', param: item})
                     }
                   })
-              }, (item: RepoModel) => item.name)
+              }, (item: UserModel) => item.name)
             }
             .scrollBar(BarState.Off)
             .divider({ strokeWidth: 1, color: 0xFAFAFA, startMargin: 0, endMargin: 0 }) // 每行之间的分界线
@@ -59,28 +65,24 @@ export struct RepoListView{
           })
           .refreshOffset(64)
           .pullToRefresh(true)
-        }else{
-          LoadingProgress()
-            .width(100)
-            .height('100%')
         }
       }
       .width('100%')
       .height('100%')
     }
-    .title('仓库')
     .onReady((context) => {
       this.param = context.pathInfo.param as UserListParam
       this.derivedStack = context.pathStack as DerivedNavPathStack
     })
-    .onAppear(() => {
+    .onAppear(() =>{
       this.headerRefresh()
     })
+    .title(this.param?.type == 'followers' ? '关注' : '粉丝')
   }
 
   headerRefresh(){
     this.page = 1
-    this.getRepos()
+    this.getUsers()
   }
 
   footerRefresh(){
@@ -89,25 +91,30 @@ export struct RepoListView{
     }
     this.isFooterRefreshing = true
     this.page ++
-    this.getRepos()
+    this.getUsers()
   }
 
-  getRepos() {
+  getUsers() {
     const session = rcp.createSession()
-    // https://gitee.com/api/v5/users/fandongtongxue_admin/repos?access_token=8b54574d49a35d59fcbff25c54d3e934&limit=20&sort=created&direction=desc
-    let userData = preferences.getPreferencesSync(getContext(this), { name: 'user.db' })
+    // https://gitee.com/api/v5/users/fandongtongxue_admin/starred?access_token=8b54574d49a35d59fcbff25c54d3e934&limit=20&sort=created&direction=desc
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
-    let url = `https://gitee.com/api/v5/users/${this.param?.isMe ? userData.getSync('login', '') : this.param?.login}/${this.param?.type}?access_token=${tokenData.getSync('access_token', '')}&perpage=100&direction=desc&page=${this.page}`
+    let prefix = ''
+    if (this.param?.isMe) {
+      prefix = `https://gitee.com/api/v5/user/${this.param?.type}`
+    }else{
+      prefix = `https://gitee.com/api/v5/users/${this.param?.login}/${this.param?.type}`
+    }
+    let url = `${prefix}?access_token=${tokenData.getSync('access_token', '')}&perpage=100&page=${this.page}`
     console.log('当前请求URL:',url)
     session.get(url).then((response) => {
       console.info(`Response succeeded: ${response}`);
       let jsonStr = response.toString()
       if (jsonStr != null) {
-        let result: Array<RepoModel> = JSON.parse(jsonStr)
+        let result: Array<UserModel> = JSON.parse(jsonStr)
         if (this.page == 1) {
-          this.repos = result
+          this.users = result
         }else{
-          this.repos.push(...result)
+          this.users.push(...result)
         }
       }
       this.isRefreshing = false

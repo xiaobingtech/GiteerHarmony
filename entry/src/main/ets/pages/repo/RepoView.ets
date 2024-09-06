@@ -35,7 +35,7 @@ export struct RepoView {
       const session = rcp.createSession()
       let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
       let url = `https://gitee.com/api/v5/user/starred/${this.item?.full_name}?access_token=${tokenData.getSync('access_token', '')}`
-      console.log('当前URL:',url)
+      console.log('当前请求URL:',url)
       if (this.item?.stared) {
         session.put(url).then((response) => {
           console.info(`Response succeeded: ${response}`);
@@ -189,7 +189,7 @@ export struct RepoView {
     const session = rcp.createSession()
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
     let url = `https://gitee.com/api/v5/repos/${this.name}?access_token=${tokenData.getSync('access_token', '')}`
-    console.log('当前URL:',url)
+    console.log('当前请求URL:',url)
     session.get(url).then((response) => {
       console.info(`Response succeeded: ${response}`);
       let jsonStr = response.toString()
@@ -208,7 +208,7 @@ export struct RepoView {
     const session = rcp.createSession()
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
     let url = `https://gitee.com/api/v5/repos/${this.name}/readme?access_token=${tokenData.getSync('access_token', '')}`
-    console.log('当前URL:',url)
+    console.log('当前请求URL:',url)
     session.get(url).then((response) => {
       console.info(`Response succeeded: ${response}`);
       let jsonStr = response.toString()
