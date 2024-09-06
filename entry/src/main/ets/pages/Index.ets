@@ -3,7 +3,6 @@ import { PersonalTokenDialog } from './PersonalTokenDialog';
 import { preferences } from '@kit.ArkData';
 import { DerivedNavPathStack } from '../common/DerivedNavPathStack';
 import { Constraints } from '../Constraints';
-import { WebPage } from './WebPage';
 
 @Entry
 @Component
@@ -53,12 +52,6 @@ struct Index {
   // 在自定义组件即将析构销毁时将dialogController置空
   aboutToDisappear() {
     this.dialogController = null // 将dialogController置空
-    this.derivedStack.setId('star stack');
-  }
-
-  @Builder
-  pageMap(name: string) {
-    WebPage()
   }
 
   build() {
@@ -80,7 +73,7 @@ struct Index {
           .onClick(() => {
             let url = `https://gitee.com/oauth/authorize?client_id=${Constraints.client_id}&redirect_uri=${Constraints.redirect_uri}&response_type=code`
             console.log('当前加载URL:'+url)
-            this.derivedStack.pushPath({name: 'WebPage', param: url})
+            this.derivedStack.pushPath({name: 'WebView', param: url})
           })
       }
       .height('100%')
@@ -90,6 +83,5 @@ struct Index {
       .alignItems(HorizontalAlign.End)
     }
     .title('登录Gitee（码云）')
-    .navDestination(this.pageMap)
   }
 }

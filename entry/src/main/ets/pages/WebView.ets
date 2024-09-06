@@ -8,9 +8,14 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { UserModel } from '../model/UserModel';
 import { DerivedNavPathStack } from '../common/DerivedNavPathStack';
 
+@Builder
+export function WebViewBuilder(name: string, param: Object) {
+  WebView()
+}
+
 @Entry
 @Component
-export struct WebPage {
+export struct WebView {
   @State url: string = ''
   @State title: string = ''
   controller: webview.WebviewController = new webview.WebviewController()

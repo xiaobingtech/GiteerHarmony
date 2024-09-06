@@ -1,19 +1,24 @@
 {
   "routerMap": [
     {
-      "name": "RepoPage",
-      "pageSourceFile": "src/main/ets/pages/repo/RepoPage.ets",
-      "buildFunction": "RepoPageBuilder"
+      "name": "RepoView",
+      "pageSourceFile": "src/main/ets/pages/repo/RepoView.ets",
+      "buildFunction": "RepoViewBuilder"
     },
     {
-      "name": "RepoTreePage",
-      "pageSourceFile": "src/main/ets/pages/repo/RepoTreePage.ets",
-      "buildFunction": "RepoTreePageBuilder"
+      "name": "RepoTreeView",
+      "pageSourceFile": "src/main/ets/pages/repo/RepoTreeView.ets",
+      "buildFunction": "RepoTreeViewBuilder"
     },
     {
       "name": "VideoView",
       "pageSourceFile": "src/main/ets/pages/repo/VideoView.ets",
       "buildFunction": "VideoViewBuilder"
+    },
+    {
+      "name": "WebView",
+      "pageSourceFile": "src/main/ets/pages/WebView.ets",
+      "buildFunction": "WebViewBuilder"
     }
   ]
 }

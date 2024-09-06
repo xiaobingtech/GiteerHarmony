@@ -11,12 +11,12 @@ import util from '@ohos.util';
 
 
 @Builder
-export function RepoPageBuilder(name: string, param: Object) {
-  RepoPage()
+export function RepoViewBuilder(name: string, param: Object) {
+  RepoView()
 }
 
 @Component
-export struct RepoPage {
+export struct RepoView {
   @State item: RepoModel|null = null
   @State name: string = ''
   @State ref: string = ''
@@ -87,7 +87,7 @@ export struct RepoPage {
             }
             .onClick(() => {
               if (this.derivedStack) {
-                this.derivedStack.pushPath({name: 'RepoTreePage', param: this.item})
+                this.derivedStack.pushPath({name: 'RepoTreeView', param: this.item})
               }
             })
             .width('100%')
