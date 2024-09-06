@@ -226,7 +226,12 @@ export struct RepoView {
         let textDecoder = util.TextDecoder.create('utf-8', textDecoderOptions);
         let resultA = Base64.decode(this.readme?.content);
         let retStr = textDecoder.decodeToString(resultA, decodeToStringOptions);
-        this.content = retStr
+
+        let baseURL = `https://gitee.com/${this.item?.full_name}/raw/${this.ref}/`;
+        const regex = /\]\((?!http)(.*?)\)/g; // 注意：在 TypeScript 中正则表达式以 / 开头和结尾
+        let replacedContent = retStr.replace(regex, `](${baseURL}$1)`);
+
+        this.content = replacedContent
       }
     }).catch((err: BusinessError) => {
       console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
