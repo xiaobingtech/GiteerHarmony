@@ -31,7 +31,7 @@ export struct IssueSubView {
               IssueItem({ item: item })
                 .onClick(() => {
                   if (this.derivedStack != null) {
-                    // this.derivedStack.pushPath({ name: 'RepoPage', param: item.path_with_namespace })
+                    this.derivedStack.pushPath({name: 'WebView', param: item.html_url})
                   }
                 })
             }, (item: IssueModel) => `${item.id}`)

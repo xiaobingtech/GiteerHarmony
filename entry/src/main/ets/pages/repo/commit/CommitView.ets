@@ -34,9 +34,8 @@ struct CommitView{
               ForEach(this.commits, (item: CommitModel) => {
                 CommitItem({ item: item})
                   .onClick(() => {
-                    let url = `https://gitee.com/${this.name}/commit/${item.sha}`
                     if (this.derivedStack != null) {
-                      this.derivedStack.pushPath({name: 'WebView', param: url})
+                      this.derivedStack.pushPath({name: 'WebView', param: item.html_url})
                     }
                   })
               }, (item: CommitModel) => item.sha)
