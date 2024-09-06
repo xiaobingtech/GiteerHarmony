@@ -115,7 +115,7 @@ export struct RepoView {
             }
             .onClick(() => {
               if (this.derivedStack) {
-                this.derivedStack.pushPath({name: 'IssueView', param: this.item})
+                this.derivedStack.pushPath({name: 'IssueView', param: this.item?.full_name})
               }
             })
             .width('100%')

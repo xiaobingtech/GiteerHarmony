@@ -24,6 +24,11 @@
       "name": "CommitView",
       "pageSourceFile": "src/main/ets/pages/repo/commit/CommitView.ets",
       "buildFunction": "CommitViewBuilder"
+    },
+    {
+      "name": "IssueView",
+      "pageSourceFile": "src/main/ets/pages/repo/issue/IssueView.ets",
+      "buildFunction": "IssueViewBuilder"
     }
   ]
 }
