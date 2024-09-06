@@ -34,6 +34,11 @@
       "name": "PullRequestView",
       "pageSourceFile": "src/main/ets/pages/repo/pr/PullRequestView.ets",
       "buildFunction": "PullRequestViewBuilder"
+    },
+    {
+      "name": "SettingView",
+      "pageSourceFile": "src/main/ets/pages/me/SettingView.ets",
+      "buildFunction": "SettingViewBuilder"
     }
   ]
 }

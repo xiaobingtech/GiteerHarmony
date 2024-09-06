@@ -48,6 +48,7 @@ export struct RepoTreeView {
                     SymbolGlyph($r('sys.symbol.chevron_right'))
                   }
                 }
+                .width('100%')
                 .height(44)
                 .padding(15)
                 .onClick((event) =>{

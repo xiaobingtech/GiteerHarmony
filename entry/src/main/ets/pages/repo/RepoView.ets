@@ -112,7 +112,7 @@ export struct RepoView {
               Text('Issue')
               Blank()
               Text(`${this.item?.open_issues_count}`)
-              Blank().width(15)
+              Blank().width(10)
               SymbolGlyph($r('sys.symbol.chevron_right'))
             }
             .onClick(() => {
@@ -141,6 +141,8 @@ export struct RepoView {
             Row(){
               Text('Branch')
               Blank()
+              Text(this.item?.default_branch)
+              Blank().width(10)
               SymbolGlyph($r('sys.symbol.chevron_right'))
             }
             .width('100%')

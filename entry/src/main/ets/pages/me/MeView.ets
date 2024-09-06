@@ -3,11 +3,18 @@ import { router } from '@kit.ArkUI'
 import { UserModel } from '../../model/UserModel'
 import { rcp } from '@kit.RemoteCommunicationKit'
 import { BusinessError } from '@kit.BasicServicesKit'
+import { DerivedNavPathStack } from '../../common/DerivedNavPathStack'
 
 @Component
 export struct MeView{
 
   @State item: UserModel|null = null
+
+  private derivedStack: DerivedNavPathStack | null = null
+
+  aboutToAppear(): void {
+    this.derivedStack = AppStorage.get('derivedStack') as DerivedNavPathStack
+  }
 
   build() {
     Navigation(){
@@ -67,16 +74,43 @@ export struct MeView{
           .width('100%')
           .height(50)
           Divider()
-          Text('退出登录')
-            .onClick(() => {
-              let data = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
-              data.putSync('access_token', '')
-              data.putSync('refresh_token', '')
-              data.flush()
-              router.replaceUrl({
-                url: "pages/Index"
-              })
-            })
+          Row(){
+            Text('消息通知')
+            Blank()
+            SymbolGlyph($r('sys.symbol.chevron_right'))
+          }
+          .onClick(() => {
+            if (this.derivedStack) {
+
+            }
+          })
+          .width('100%')
+          .height(44)
+          .padding(15)
+          Divider()
+          Row(){
+            Text(this.item?.email)
+            Blank()
+            SymbolGlyph($r('sys.symbol.chevron_right'))
+          }
+          .width('100%')
+          .height(44)
+          .padding(15)
+          Divider()
+          Row(){
+            Text('设置')
+            Blank()
+            SymbolGlyph($r('sys.symbol.chevron_right'))
+          }
+          .onClick(() => {
+            if (this.derivedStack) {
+              this.derivedStack.pushPath({name: 'SettingView'})
+            }
+          })
+          .width('100%')
+          .height(44)
+          .padding(15)
+          Divider()
         } else {
           LoadingProgress()
             .width(100)
