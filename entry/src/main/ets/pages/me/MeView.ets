@@ -114,7 +114,7 @@ export struct MeView{
           }
           .onClick(() => {
             if (this.derivedStack) {
-
+              this.derivedStack.pushPath({name: 'MessageView'})
             }
           })
           .width('100%')

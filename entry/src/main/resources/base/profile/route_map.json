@@ -54,6 +54,11 @@
       "name": "UserView",
       "pageSourceFile": "src/main/ets/pages/me/UserView.ets",
       "buildFunction": "UserViewBuilder"
+    },
+    {
+      "name": "MessageView",
+      "pageSourceFile": "src/main/ets/pages/me/message/MessageView.ets",
+      "buildFunction": "MessageViewBuilder"
     }
   ]
 }
