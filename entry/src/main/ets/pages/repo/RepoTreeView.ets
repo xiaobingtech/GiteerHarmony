@@ -6,6 +6,11 @@ import { preferences } from '@kit.ArkData';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { RepoTreeModel } from '../../model/RepoTreeModel';
 
+export class RepoTreeParam {
+  name: string|undefined = ''
+  ref: string = ''
+}
+
 @Builder
 export function RepoTreeViewBuilder(name: string, param: Object) {
   RepoTreeView()
@@ -13,6 +18,9 @@ export function RepoTreeViewBuilder(name: string, param: Object) {
 
 @Component
 export struct RepoTreeView {
+
+  @State name: string|undefined = ''
+  @State ref: string = ''
 
   @State item: RepoModel|null = null
   @State isLoading:boolean = true
@@ -85,7 +93,8 @@ export struct RepoTreeView {
       .width('100%')
     }
     .onReady((context) => {
-      this.item = context.pathInfo.param as RepoModel
+      let param = context.pathInfo.param as RepoTreeParam
+      this.name = param.name
       this.derivedStack = context.pathStack as DerivedNavPathStack
     })
     .onAppear(() =>{
@@ -98,7 +107,7 @@ export struct RepoTreeView {
     const session = rcp.createSession()
     // https://gitee.com/api/v5/users/fandongtongxue_admin/starred?access_token=8b54574d49a35d59fcbff25c54d3e934&limit=20&sort=created&direction=desc
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
-    let url = `https://gitee.com/api/v5/repos/${this.item?.full_name}/contents/${path}?access_token=${tokenData.getSync('access_token', '')}`
+    let url = `https://gitee.com/api/v5/repos/${this.name}/contents/${path}?access_token=${tokenData.getSync('access_token', '')}&ref=${this.ref}`
     console.log('当前请求URL:',url)
     session.get(url).then((response) => {
       console.info(`Response succeeded: ${response}`);

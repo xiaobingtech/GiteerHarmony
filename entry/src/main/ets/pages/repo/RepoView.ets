@@ -8,7 +8,9 @@ import { ReadmeModel } from '../../model/ReadmeModel';
 import { Base64 } from '@ohos/base64';
 import { lvMarkdownIn, mdRegister  } from '@luvi/lv-markdown-in'
 import util from '@ohos.util';
-import { router } from '@kit.ArkUI';
+import { router, SelectDialog } from '@kit.ArkUI';
+import { BranchModel } from '../../model/BranchModel';
+import { RepoTreeParam } from './RepoTreeView';
 
 
 @Builder
@@ -23,6 +25,7 @@ export struct RepoView {
   @State ref: string = ''
   @State readme: ReadmeModel|null = null
   @State content: string = ''
+  @State branch: Array<BranchModel> = []
 
   private derivedStack: DerivedNavPathStack | null = null;
 
@@ -88,7 +91,10 @@ export struct RepoView {
             }
             .onClick(() => {
               if (this.derivedStack) {
-                this.derivedStack.pushPath({name: 'RepoTreeView', param: this.item})
+                let param = new RepoTreeParam()
+                param.name = this.item?.full_name
+                param.ref = this.ref
+                this.derivedStack.pushPath({name: 'RepoTreeView', param: param})
               }
             })
             .width('100%')
@@ -142,13 +148,20 @@ export struct RepoView {
             Row(){
               Text('Branch')
               Blank()
-              Text(this.item?.default_branch)
+              Text(this.ref)
               Blank().width(10)
               SymbolGlyph($r('sys.symbol.chevron_right'))
             }
             .width('100%')
             .height(44)
             .padding(15)
+            .onClick(() => {
+              if (this.branch.length == 0) {
+                this.getRepoBranch()
+              }else{
+                this.branchDialog.open()
+              }
+            })
             Divider()
             Row(){
               Text('README')
@@ -222,7 +235,7 @@ export struct RepoView {
   getRepoReadme() {
     const session = rcp.createSession()
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
-    let url = `https://gitee.com/api/v5/repos/${this.name}/readme?access_token=${tokenData.getSync('access_token', '')}`
+    let url = `https://gitee.com/api/v5/repos/${this.name}/readme?access_token=${tokenData.getSync('access_token', '')}&ref=${this.ref}`
     console.log('当前请求URL:',url)
     session.get(url).then((response) => {
       console.info(`Response succeeded: ${response}`);
@@ -251,5 +264,52 @@ export struct RepoView {
     }).catch((err: BusinessError) => {
       console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
     })
+  }
+
+  getRepoBranch() {
+    const session = rcp.createSession()
+    let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
+    let url = `https://gitee.com/api/v5/repos/${this.name}/branches?access_token=${tokenData.getSync('access_token', '')}`
+    console.log('当前请求URL:',url)
+    session.get(url).then((response) => {
+      console.info(`Response succeeded: ${response}`);
+      let jsonStr = response.toString()
+      if (jsonStr != null) {
+        let result: Array<BranchModel> = JSON.parse(jsonStr)
+        this.branch = result
+        this.radioIndex = result.findIndex((item) => (item.name == this.ref))
+        this.branchDialog.open()
+      }
+
+    }).catch((err: BusinessError) => {
+      console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
+    })
+  }
+
+  // https://gitee.com/api/v5/repos/{owner}/{repo}/branches
+
+  radioIndex = 0
+
+  branchDialog: CustomDialogController = new CustomDialogController({
+    builder: SelectDialog({
+      title: '分支',
+      selectedIndex: this.radioIndex,
+      confirm: {
+        value: '取消',
+        action: () => {},
+      },
+      radioContent: this.generateRadioContent(this.branch.map((item) => (item.name)))
+    }),
+  })
+
+  generateRadioContent(data: string[]): Array<SheetInfo> {
+    return data.map((text, index) => ({
+      title: text,
+      action: () => {
+        this.radioIndex = index;
+        this.ref = this.branch[index].name
+        this.getRepoReadme()
+      }
+    } as SheetInfo));
   }
 }
