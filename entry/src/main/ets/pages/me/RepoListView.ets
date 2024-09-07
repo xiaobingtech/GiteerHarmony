@@ -6,6 +6,8 @@ import { preferences } from '@kit.ArkData'
 import { BusinessError } from '@kit.BasicServicesKit'
 import { UserListParam } from './UserListView'
 import { User } from '../../model/EventModel'
+import { efRcpClientApi } from '@yunkss/ef_rcp'
+import { promptAction } from '@kit.ArkUI'
 
 @Builder
 export function RepoListViewBuilder(name: string, param: Object) {
@@ -29,7 +31,11 @@ export struct RepoListView{
   build() {
     NavDestination(){
       Column(){
-        if (!this.isRefreshing) {
+        if (this.isRefreshing && this.repos.length == 0) {
+          LoadingProgress()
+            .width(100)
+            .height('100%')
+        }else{
           Refresh({refreshing: $$this.isRefreshing}){
             List(){
               ForEach(this.repos, (item: RepoModel) => {
@@ -59,10 +65,6 @@ export struct RepoListView{
           })
           .refreshOffset(64)
           .pullToRefresh(true)
-        }else{
-          LoadingProgress()
-            .width(100)
-            .height('100%')
         }
       }
       .width('100%')
@@ -92,30 +94,29 @@ export struct RepoListView{
     this.getRepos()
   }
 
-  getRepos() {
-    const session = rcp.createSession()
-    // https://gitee.com/api/v5/users/fandongtongxue_admin/repos?access_token=8b54574d49a35d59fcbff25c54d3e934&limit=20&sort=created&direction=desc
+  async getRepos() {
     let userData = preferences.getPreferencesSync(getContext(this), { name: 'user.db' })
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
     let url = `https://gitee.com/api/v5/users/${this.param?.isMe ? userData.getSync('login', '') : this.param?.login}/${this.param?.type}?access_token=${tokenData.getSync('access_token', '')}&perpage=100&direction=desc&page=${this.page}`
-    console.log('当前请求URL:',url)
-    session.get(url).then((response) => {
-      console.info(`Response succeeded: ${response}`);
-      let jsonStr = response.toString()
-      if (jsonStr != null) {
-        let result: Array<RepoModel> = JSON.parse(jsonStr)
-        if (this.page == 1) {
-          this.repos = result
-        }else{
-          this.repos.push(...result)
-        }
-      }
-      this.isRefreshing = false
-      this.isFooterRefreshing = false
-    }).catch((err: BusinessError) => {
-      console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
-      this.isRefreshing = false
-      this.isFooterRefreshing = false
+    let response = await efRcpClientApi.get<Array<RepoModel>>({
+      url: url
     })
+    if (response.error) {
+      this.isRefreshing = false
+      this.isFooterRefreshing = false
+      promptAction.showToast({
+        message: response.error.message
+      })
+      return
+    }
+    let result = response.data
+    if (this.page == 1) {
+      this.repos = result!
+    }else{
+      this.repos.push(...result!)
+    }
+    this.isRefreshing = false
+    this.isFooterRefreshing = false
+
   }
 }

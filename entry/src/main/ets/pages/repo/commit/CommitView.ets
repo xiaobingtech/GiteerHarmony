@@ -4,6 +4,8 @@ import { preferences } from '@kit.ArkData'
 import { rcp } from '@kit.RemoteCommunicationKit'
 import { BusinessError } from '@kit.BasicServicesKit'
 import { CommitItem } from './CommitItem'
+import { efRcpClientApi } from '@yunkss/ef_rcp'
+import { promptAction } from '@kit.ArkUI'
 
 @Builder
 export function CommitViewBuilder(name: string, param: Object) {
@@ -28,7 +30,11 @@ struct CommitView{
   build() {
     NavDestination(){
       Column(){
-        if (!this.isRefreshing) {
+        if (this.isRefreshing && this.commits.length == 0) {
+          LoadingProgress()
+            .width(100)
+            .height('100%')
+        }else{
           Refresh({refreshing: $$this.isRefreshing}){
             List(){
               ForEach(this.commits, (item: CommitModel) => {
@@ -54,10 +60,6 @@ struct CommitView{
           })
           .refreshOffset(64)
           .pullToRefresh(true)
-        }else{
-          LoadingProgress()
-            .width(100)
-            .height('100%')
         }
       }
       .width('100%')
@@ -87,27 +89,27 @@ struct CommitView{
     this.getCommits()
   }
 
-  getCommits() {
-    const session = rcp.createSession()
-    // https://gitee.com/api/v5/repos/GiteerApp/GiteerAndroid/commits?access_token=c3ddaabfcac3e76db1e3200da4021620&page=1&per_page=20
+  async getCommits() {
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
     let url = `https://gitee.com/api/v5/repos/${this.name}/commits?access_token=${tokenData.getSync('access_token', '')}&per_page=100&page=${this.page}`
-    console.log('当前请求URL:',url)
-    session.get(url).then((response) => {
-      console.info(`Response succeeded: ${response}`);
-      let jsonStr = response.toString()
-      if (jsonStr != null) {
-        let result: Array<CommitModel> = JSON.parse(jsonStr)
-        if (this.page == 1) {
-          this.commits = result
-        }else{
-          this.commits.push(...result)
-        }
-      }
-      this.isRefreshing = false
-    }).catch((err: BusinessError) => {
-      console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
-      this.isRefreshing = false
+    let response = await efRcpClientApi.get<Array<CommitModel>>({
+      url: url
     })
+    if (response.error) {
+      this.isRefreshing = false
+      this.isFooterRefreshing = false
+      promptAction.showToast({
+        message: response.error.message
+      })
+      return
+    }
+    let result = response.data
+    if (this.page == 1) {
+      this.commits = result!
+    }else{
+      this.commits.push(...result!)
+    }
+    this.isRefreshing = false
+    this.isFooterRefreshing = false
   }
 }

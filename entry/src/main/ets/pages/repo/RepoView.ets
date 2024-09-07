@@ -8,9 +8,10 @@ import { ReadmeModel } from '../../model/ReadmeModel';
 import { Base64 } from '@ohos/base64';
 import { lvMarkdownIn, mdRegister  } from '@luvi/lv-markdown-in'
 import util from '@ohos.util';
-import { router, SelectDialog } from '@kit.ArkUI';
+import { promptAction, router, SelectDialog } from '@kit.ArkUI';
 import { BranchModel } from '../../model/BranchModel';
 import { RepoTreeParam } from './RepoTreeView';
+import { efRcpClientApi, EfRcpResponse } from '@yunkss/ef_rcp';
 
 
 @Builder
@@ -35,28 +36,27 @@ export struct RepoView {
         .fontSize(24)
     }
     .padding(15)
-    .onClick(() => {
-      const session = rcp.createSession()
+    .onClick(async () => {
       let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
       let url = `https://gitee.com/api/v5/user/starred/${this.item?.full_name}?access_token=${tokenData.getSync('access_token', '')}`
-      console.log('当前请求URL:',url)
+      let response: EfRcpResponse<RepoModel>|null = null
       if (this.item?.stared) {
-        session.delete(url).then((response) => {
-          console.info(`Response succeeded: ${response}`);
-          // this.item?.stared = false
-          this.getRepo()
-        }).catch((err: BusinessError) => {
-          console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
-        })
+        response = await efRcpClientApi.put<RepoModel>({
+					url: url,
+					query: undefined
+				})
       }else{
-        session.put(url).then((response) => {
-          console.info(`Response succeeded: ${response}`);
-          // this.item?.stared = true
-          this.getRepo()
-        }).catch((err: BusinessError) => {
-          console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
+        response = await efRcpClientApi.delete<RepoModel>({
+          url: url
         })
       }
+      if (response.error) {
+        promptAction.showToast({
+          message: response.error.message
+        })
+        return
+      }
+      this.getRepo()
     })
   }
 
@@ -232,77 +232,74 @@ export struct RepoView {
     }
   }
 
-  getRepo() {
-    const session = rcp.createSession()
+  async getRepo() {
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
     let url = `https://gitee.com/api/v5/repos/${this.name}?access_token=${tokenData.getSync('access_token', '')}`
-    console.log('当前请求URL:',url)
-    session.get(url).then((response) => {
-      console.info(`Response succeeded: ${response}`);
-      let jsonStr = response.toString()
-      if (jsonStr != null) {
-        let result: RepoModel = JSON.parse(jsonStr)
-        this.item = result
-        this.ref = result.default_branch
-      }
-
-    }).catch((err: BusinessError) => {
-      console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
+    let response = await efRcpClientApi.get<RepoModel>({
+      url: url
     })
+    if (response.error) {
+      promptAction.showToast({
+        message: response.error.message
+      })
+      return
+    }
+    let result = response.data!
+    this.item = result
+    this.ref = result.default_branch
   }
 
-  getRepoReadme() {
-    const session = rcp.createSession()
+  async getRepoReadme() {
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
     let url = `https://gitee.com/api/v5/repos/${this.name}/readme?access_token=${tokenData.getSync('access_token', '')}&ref=${this.ref}`
-    console.log('当前请求URL:',url)
-    session.get(url).then((response) => {
-      console.info(`Response succeeded: ${response}`);
-      let jsonStr = response.toString()
-      if (jsonStr != null) {
-        let result: ReadmeModel = JSON.parse(jsonStr)
-        this.readme = result
-
-        let textDecoderOptions: util.TextDecoderOptions = {
-          fatal: false,
-          ignoreBOM : true
-        }
-        let decodeToStringOptions: util.DecodeToStringOptions = {
-          stream: false
-        }
-        let textDecoder = util.TextDecoder.create('utf-8', textDecoderOptions);
-        let resultA = Base64.decode(this.readme?.content);
-        let retStr = textDecoder.decodeToString(resultA, decodeToStringOptions);
-
-        let baseURL = `https://gitee.com/${this.item?.full_name}/raw/${this.ref}/`;
-        const regex = /\]\((?!http)(.*?)\)/g; // 注意：在 TypeScript 中正则表达式以 / 开头和结尾
-        let replacedContent = retStr.replace(regex, `](${baseURL}$1)`);
-
-        this.content = replacedContent
-      }
-    }).catch((err: BusinessError) => {
-      console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
+    let response = await efRcpClientApi.get<ReadmeModel>({
+      url: url
     })
+    if (response.error) {
+      promptAction.showToast({
+        message: response.error.message
+      })
+      return
+    }
+    let result = response.data!
+    this.readme = result
+
+    let textDecoderOptions: util.TextDecoderOptions = {
+      fatal: false,
+      ignoreBOM : true
+    }
+    let decodeToStringOptions: util.DecodeToStringOptions = {
+      stream: false
+    }
+    let textDecoder = util.TextDecoder.create('utf-8', textDecoderOptions);
+    let resultA = Base64.decode(this.readme?.content);
+    let retStr = textDecoder.decodeToString(resultA, decodeToStringOptions);
+
+    let baseURL = `https://gitee.com/${this.item?.full_name}/raw/${this.ref}/`;
+    const regex = /\]\((?!http)(.*?)\)/g; // 注意：在 TypeScript 中正则表达式以 / 开头和结尾
+    let replacedContent = retStr.replace(regex, `](${baseURL}$1)`);
+
+    this.content = replacedContent
+
   }
 
-  getRepoBranch() {
-    const session = rcp.createSession()
+  async getRepoBranch() {
+
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
     let url = `https://gitee.com/api/v5/repos/${this.name}/branches?access_token=${tokenData.getSync('access_token', '')}`
-    console.log('当前请求URL:',url)
-    session.get(url).then((response) => {
-      console.info(`Response succeeded: ${response}`);
-      let jsonStr = response.toString()
-      if (jsonStr != null) {
-        let result: Array<BranchModel> = JSON.parse(jsonStr)
-        this.branch = result
-        this.radioIndex = result.findIndex((item) => (item.name == this.ref))
-        this.branchDialog.open()
-      }
-
-    }).catch((err: BusinessError) => {
-      console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
+    let response = await efRcpClientApi.get<Array<BranchModel>>({
+      url: url
     })
+    if (response.error) {
+      promptAction.showToast({
+        message: response.error.message
+      })
+      return
+    }
+    let result = response.data!
+    this.branch = result
+    this.radioIndex = result.findIndex((item) => (item.name == this.ref))
+    this.branchDialog.open()
   }
 
   // https://gitee.com/api/v5/repos/{owner}/{repo}/branches

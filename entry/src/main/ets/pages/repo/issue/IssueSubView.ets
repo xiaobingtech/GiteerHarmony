@@ -4,6 +4,8 @@ import { preferences } from '@kit.ArkData'
 import { rcp } from '@kit.RemoteCommunicationKit'
 import { IssueModel } from '../../../model/IssueModel'
 import { IssueItem } from './IssueItem'
+import { promptAction } from '@kit.ArkUI'
+import { efRcpClientApi } from '@yunkss/ef_rcp'
 
 @Component
 export struct IssueSubView {
@@ -24,7 +26,11 @@ export struct IssueSubView {
 
   build() {
     Column() {
-      if (!this.isRefreshing) {
+      if (this.isRefreshing && this.issues.length == 0) {
+        LoadingProgress()
+          .width(100)
+          .height('100%')
+      } else {
         Refresh({ refreshing: $$this.isRefreshing }) {
           List() {
             ForEach(this.issues, (item: IssueModel) => {
@@ -55,10 +61,6 @@ export struct IssueSubView {
         })
         .refreshOffset(64)
         .pullToRefresh(true)
-      } else {
-        LoadingProgress()
-          .width(100)
-          .height('100%')
       }
     }
     .width('100%')
@@ -82,28 +84,27 @@ export struct IssueSubView {
     this.getIssues()
   }
 
-  getIssues() {
-    const session = rcp.createSession()
+  async getIssues() {
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
     let url = `https://gitee.com/api/v5/repos/${this.name}/issues?access_token=${tokenData.getSync('access_token', '')}&per_page=100&page=${this.page}&state=${this.state}`
-    console.log('当前请求URL', url)
-    session.get(url).then((response) => {
-      console.info(`Response succeeded: ${response}`);
-      let jsonStr = response.toString()
-      if (jsonStr != null) {
-        let result: Array<IssueModel> = JSON.parse(jsonStr)
-        if (this.page == 1) {
-          this.issues = result
-        } else {
-          this.issues.push(...result)
-        }
-      }
-      this.isRefreshing = false
-      this.isFooterRefreshing = false
-    }).catch((err: BusinessError) => {
-      console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
-      this.isRefreshing = false
-      this.isFooterRefreshing = false
+    let response = await efRcpClientApi.get<Array<IssueModel>>({
+      url: url
     })
+    if (response.error) {
+      this.isRefreshing = false
+      this.isFooterRefreshing = false
+      promptAction.showToast({
+        message: response.error.message
+      })
+      return
+    }
+    let result = response.data
+    if (this.page == 1) {
+      this.issues = result!
+    }else{
+      this.issues.push(...result!)
+    }
+    this.isRefreshing = false
+    this.isFooterRefreshing = false
   }
 }

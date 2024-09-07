@@ -5,11 +5,14 @@ import { BusinessError } from '@kit.BasicServicesKit'
 import { DerivedNavPathStack } from '../../common/DerivedNavPathStack'
 import { EventItem } from './EventItem'
 import { it } from '@ohos/hypium'
+import { efRcpClientApi } from '@yunkss/ef_rcp'
+import { promptAction } from '@kit.ArkUI'
 
 @Component
 export struct EventView{
 
   @State isRefreshing: boolean = true
+  @State isFooterRefreshing: boolean = false
 
   @State prev_id: number = 0
 
@@ -89,7 +92,11 @@ export struct EventView{
   build() {
     Navigation(){
       Column(){
-        if (!this.isRefreshing) {
+        if (this.isRefreshing && this.events.length == 0) {
+          LoadingProgress()
+            .width(100)
+            .height('100%')
+        }else{
           Refresh({refreshing: $$this.isRefreshing}){
             List(){
               ForEach(this.events, (item: EventModel) => {
@@ -102,18 +109,14 @@ export struct EventView{
             .width('100%')
             .height('100%')
             .onReachEnd(() =>{
-              this.getEvents()
+              this.footerRefresh()
             })
           }
           .onRefreshing(() => {
-            this.getEvents()
+            this.headerRefresh()
           })
           .refreshOffset(64)
           .pullToRefresh(true)
-        }else{
-          LoadingProgress()
-            .width(100)
-            .height('100%')
         }
       }
       .width('100%')
@@ -125,32 +128,45 @@ export struct EventView{
     })
   }
 
-  getEvents() {
-    const session = rcp.createSession()
-    // https://gitee.com/api/v5/users/fandongtongxue_admin/starred?access_token=8b54574d49a35d59fcbff25c54d3e934&limit=20&sort=created&direction=desc
+  headerRefresh(){
+    this.prev_id = 0
+    this.getEvents()
+  }
+
+  footerRefresh(){
+    if (this.isFooterRefreshing || this.events.length < 100) {
+      return
+    }
+    this.isFooterRefreshing = true
+    this.getEvents()
+  }
+
+  async getEvents() {
     let userData = preferences.getPreferencesSync(getContext(this), { name: 'user.db' })
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
     let url = `https://gitee.com/api/v5/users/${userData.getSync('login', '')}/received_events?access_token=${tokenData.getSync('access_token', '')}&limit=100`
     if (this.prev_id != 0) {
       url = url +`&prev_id=${this.prev_id}`
     }
-    console.log('当前请求URL:',url)
-    session.get(url).then((response) => {
-      console.info(`Response succeeded: ${response}`);
-      let jsonStr = response.toString()
-      if (jsonStr != null) {
-        let result: Array<EventModel> = JSON.parse(jsonStr)
-        if (this.prev_id == 0) {
-          this.events = result
-        }else{
-          this.events.push(...result)
-        }
-        this.prev_id = result[result.length - 1].id
-      }
-      this.isRefreshing = false
-    }).catch((err: BusinessError) => {
-      console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
-      this.isRefreshing = false
+    let response = await efRcpClientApi.get<Array<EventModel>>({
+      url: url
     })
+    if (response.error) {
+      this.isRefreshing = false
+      this.isFooterRefreshing = false
+      promptAction.showToast({
+        message: response.error.message
+      })
+      return
+    }
+    let result = response.data
+    if (this.prev_id == 0) {
+      this.events = result!
+    }else{
+      this.events.push(...result!)
+    }
+    this.prev_id = result![result!.length - 1].id
+    this.isRefreshing = false
+    this.isFooterRefreshing = false
   }
 }

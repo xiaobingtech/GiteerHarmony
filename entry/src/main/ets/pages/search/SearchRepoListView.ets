@@ -1,24 +1,24 @@
-import { RepoModel } from '../../model/RepoModel'
+import { DerivedNavPathStack } from '../../common/DerivedNavPathStack'
+import { UserModel } from '../../model/UserModel'
+import { UserItem } from './UserItem'
 import { rcp } from '@kit.RemoteCommunicationKit'
 import { BusinessError } from '@kit.BasicServicesKit'
-import { TrendSubItem } from './TrendSubItem'
-import { DerivedNavPathStack } from '../../common/DerivedNavPathStack'
+import { preferences } from '@kit.ArkData'
 import { efRcpClientApi } from '@yunkss/ef_rcp'
 import { promptAction } from '@kit.ArkUI'
-
+import { RepoModel } from '../../model/RepoModel'
 
 @Component
-export struct TrendSubView{
+export struct SearchRepoListView{
 
   @State page: number = 1
 
-  @State isRefreshing: boolean = true
+  @State isRefreshing: boolean = false
   @State isFooterRefreshing:boolean = false
 
-  @Prop type: string = ''
+  @Prop @Watch('getRepos') q:string
 
   @State repos: Array<RepoModel> = []
-  @State prev_id: number = 0
 
   private derivedStack: DerivedNavPathStack | null = null
 
@@ -27,26 +27,18 @@ export struct TrendSubView{
   }
 
   build() {
-    Column(){
-      if (this.isRefreshing && this.repos.length == 0) {
-        LoadingProgress()
-          .width(100)
-          .height('100%')
-      }else{
+    Row() {
+      Column() {
         Refresh({refreshing:$$this.isRefreshing}){
           List(){
-            ForEach(this.repos, (item: RepoModel) => {
-              TrendSubItem({ item: item })
+            ForEach(this.repos, (item: UserModel) => {
+              UserItem({ item: item })
                 .onClick(() => {
                   if (this.derivedStack != null) {
-                    if (this.derivedStack.size() == 0) {
-                      this.derivedStack.pushPath({name: 'RepoView', param: item.path_with_namespace})
-                    }else{
-                      this.derivedStack.replacePath({name: 'RepoView', param: item.path_with_namespace})
-                    }
+                    this.derivedStack.pushPath({name: 'UserView', param: item.login})
                   }
                 })
-            }, (item: RepoModel) => item.name)
+            }, (item: UserModel) => item.name)
           }
           .scrollBar(BarState.Off)
           .divider({ strokeWidth: 1, color: 0xFAFAFA, startMargin: 0, endMargin: 0 }) // 每行之间的分界线
@@ -66,27 +58,25 @@ export struct TrendSubView{
     }
     .width('100%')
     .height('100%')
-    .onAppear(() => {
-      this.headerRefresh()
-    })
   }
 
   headerRefresh(){
     this.page = 1
-    this.getProjects()
+    this.getRepos()
   }
 
   footerRefresh(){
-    if (this.isFooterRefreshing || this.repos.length  < 20) {
+    if (this.isFooterRefreshing || this.repos.length < 100) {
       return
     }
     this.isFooterRefreshing = true
     this.page ++
-    this.getProjects()
+    this.getRepos()
   }
 
-  async getProjects() {
-    let url = `https://gitee.com/api/v3/projects/${this.type}?page=${this.page}`
+  async getRepos() {
+    let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
+    let url = `https://gitee.com/api/v5/search/repositories?access_token=${tokenData.getSync('access_token', '')}&perpage=100&page=${this.page}&order=desc&q=${this.q}`
     let response = await efRcpClientApi.get<Array<RepoModel>>({
       url: url
     })

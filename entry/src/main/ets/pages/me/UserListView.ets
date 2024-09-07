@@ -4,6 +4,8 @@ import { rcp } from '@kit.RemoteCommunicationKit'
 import { BusinessError } from '@kit.BasicServicesKit'
 import { preferences } from '@kit.ArkData'
 import { UserItem } from '../search/UserItem'
+import { promptAction } from '@kit.ArkUI'
+import { efRcpClientApi } from '@yunkss/ef_rcp'
 
 export class UserListParam {
   isMe: boolean = false
@@ -39,7 +41,11 @@ export struct UserListView{
   build() {
     NavDestination(){
       Column() {
-        if (!this.isRefreshing) {
+        if (this.isRefreshing && this.users.length == 0) {
+          LoadingProgress()
+            .width(100)
+            .height('100%')
+        }else{
           Refresh({refreshing:$$this.isRefreshing}){
             List(){
               ForEach(this.users, (item: UserModel) => {
@@ -65,10 +71,6 @@ export struct UserListView{
           })
           .refreshOffset(64)
           .pullToRefresh(true)
-        }else{
-          LoadingProgress()
-            .width(100)
-            .height('100%')
         }
       }
       .width('100%')
@@ -98,9 +100,7 @@ export struct UserListView{
     this.getUsers()
   }
 
-  getUsers() {
-    const session = rcp.createSession()
-    // https://gitee.com/api/v5/users/fandongtongxue_admin/starred?access_token=8b54574d49a35d59fcbff25c54d3e934&limit=20&sort=created&direction=desc
+  async getUsers() {
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
     let prefix = ''
     if (this.param?.isMe) {
@@ -109,24 +109,24 @@ export struct UserListView{
       prefix = `https://gitee.com/api/v5/users/${this.param?.login}/${this.param?.type}`
     }
     let url = `${prefix}?access_token=${tokenData.getSync('access_token', '')}&perpage=100&page=${this.page}`
-    console.log('当前请求URL:',url)
-    session.get(url).then((response) => {
-      console.info(`Response succeeded: ${response}`);
-      let jsonStr = response.toString()
-      if (jsonStr != null) {
-        let result: Array<UserModel> = JSON.parse(jsonStr)
-        if (this.page == 1) {
-          this.users = result
-        }else{
-          this.users.push(...result)
-        }
-      }
-      this.isRefreshing = false
-      this.isFooterRefreshing = false
-    }).catch((err: BusinessError) => {
-      console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
-      this.isRefreshing = false
-      this.isFooterRefreshing = false
+    let response = await efRcpClientApi.get<Array<UserModel>>({
+      url: url
     })
+    if (response.error) {
+      this.isRefreshing = false
+      this.isFooterRefreshing = false
+      promptAction.showToast({
+        message: response.error.message
+      })
+      return
+    }
+    let result = response.data
+    if (this.page == 1) {
+      this.users = result!
+    }else{
+      this.users.push(...result!)
+    }
+    this.isRefreshing = false
+    this.isFooterRefreshing = false
   }
 }

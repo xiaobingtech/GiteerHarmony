@@ -4,6 +4,8 @@ import { MsgItem } from './MsgItem'
 import { rcp } from '@kit.RemoteCommunicationKit'
 import { preferences } from '@kit.ArkData'
 import { BusinessError } from '@kit.BasicServicesKit'
+import { efRcpClientApi } from '@yunkss/ef_rcp'
+import { promptAction } from '@kit.ArkUI'
 
 @Component
 export struct MsgView{
@@ -20,7 +22,11 @@ export struct MsgView{
 
   build() {
     Column() {
-      if (!this.isRefreshing) {
+      if (this.isRefreshing && this.msgs.length == 0) {
+        LoadingProgress()
+          .width(100)
+          .height('100%')
+      } else {
         Refresh({ refreshing: $$this.isRefreshing }) {
           List() {
             ForEach(this.latestPerGroup, (item: MsgModelList) => {
@@ -49,10 +55,6 @@ export struct MsgView{
         })
         .refreshOffset(64)
         .pullToRefresh(true)
-      } else {
-        LoadingProgress()
-          .width(100)
-          .height('100%')
       }
     }
     .width('100%')
@@ -76,53 +78,44 @@ export struct MsgView{
     this.getMsgs()
   }
 
-  getMsgs() {
-    const session = rcp.createSession()
+  async getMsgs() {
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
     let url = `https://gitee.com/api/v5/notifications/messages?access_token=${tokenData.getSync('access_token', '')}&per_page=100&page=${this.page}`
-    console.log('当前请求URL', url)
-    session.get(url).then((response) => {
-      console.info(`Response succeeded: ${response}`);
-      let jsonStr = response.toString()
-      if (jsonStr != null) {
-        let result: MsgModel = JSON.parse(jsonStr)
-
-
-
-        if (this.page == 1) {
-          this.msgs = result.list
-        } else {
-          this.msgs.push(...result.list)
-        }
-
-        // 分组
-        const groupedBySenderId = this.msgs.reduce<Record<number, MsgModelList[]>>((acc, currentValue) => {
-          const senderId = currentValue.sender.id;
-          if (!acc[senderId]) {
-            acc[senderId] = [];
-          }
-          acc[senderId].push(currentValue);
-          return acc;
-        }, {});
-
-        // 对每个分组找到最新的元素
-        const latestPerGroup = Object.values(groupedBySenderId).map(group => {
-          // 假设 'updated_at' 是可以直接比较的字符串，例如ISO 8601格式
-          return group.sort((a, b) => b.updated_at.localeCompare(a.updated_at))[0];
-        });
-
-        this.latestPerGroup = latestPerGroup
-
-      }
-
-
-
-      this.isRefreshing = false
-      this.isFooterRefreshing = false
-    }).catch((err: BusinessError) => {
-      console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
-      this.isRefreshing = false
-      this.isFooterRefreshing = false
+    let response = await efRcpClientApi.get<Array<MsgModelList>>({
+      url: url
     })
+    if (response.error) {
+      this.isRefreshing = false
+      this.isFooterRefreshing = false
+      promptAction.showToast({
+        message: response.error.message
+      })
+      return
+    }
+    let result = response.data
+    if (this.page == 1) {
+      this.msgs = result!
+    }else{
+      this.msgs.push(...result!)
+    }
+    // 分组
+    const groupedBySenderId = this.msgs.reduce<Record<number, MsgModelList[]>>((acc, currentValue) => {
+      const senderId = currentValue.sender.id;
+      if (!acc[senderId]) {
+        acc[senderId] = [];
+      }
+      acc[senderId].push(currentValue);
+      return acc;
+    }, {});
+
+    // 对每个分组找到最新的元素
+    const latestPerGroup = Object.values(groupedBySenderId).map(group => {
+      // 假设 'updated_at' 是可以直接比较的字符串，例如ISO 8601格式
+      return group.sort((a, b) => b.updated_at.localeCompare(a.updated_at))[0];
+    });
+
+    this.latestPerGroup = latestPerGroup
+    this.isRefreshing = false
+    this.isFooterRefreshing = false
   }
 }

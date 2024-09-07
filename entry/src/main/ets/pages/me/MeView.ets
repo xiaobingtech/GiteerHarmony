@@ -1,10 +1,11 @@
 import { preferences } from '@kit.ArkData'
-import { router } from '@kit.ArkUI'
+import { promptAction, router } from '@kit.ArkUI'
 import { UserModel } from '../../model/UserModel'
 import { rcp } from '@kit.RemoteCommunicationKit'
 import { BusinessError } from '@kit.BasicServicesKit'
 import { DerivedNavPathStack } from '../../common/DerivedNavPathStack'
 import { UserListParam } from './UserListView'
+import { efRcpClientApi } from '@yunkss/ef_rcp'
 
 @Component
 export struct MeView{
@@ -159,24 +160,22 @@ export struct MeView{
     .title('我的')
   }
 
-  getUser() {
+  async getUser() {
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
-    const session = rcp.createSession()
-    let url = "https://gitee.com/api/v5/user?access_token="+tokenData.getSync('access_token', '')
-    console.log('当前请求URL:', url)
-    session.get(url).then((response) => {
-      console.info(`Response succeeded: ${response}`);
-      let jsonStr = response.toString()
-      if (jsonStr != null) {
-        let result: UserModel = JSON.parse(jsonStr)
-        //存储数据
-        let data = preferences.getPreferencesSync(getContext(this), { name: 'user.db' })
-        data?.putSync('login', result.login)
-        data?.flush()
-        this.item = result
-      }
-    }).catch((err: BusinessError) => {
-      console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
+    let url = `https://gitee.com/api/v5/user?access_token=${tokenData.getSync('access_token', '')}`
+    let response = await efRcpClientApi.get<UserModel>({
+      url: url
     })
+    if (response.error) {
+      promptAction.showToast({
+        message: response.error.message
+      })
+      return
+    }
+    let result = response.data!
+    let data = preferences.getPreferencesSync(getContext(this), { name: 'user.db' })
+    data?.putSync('login', result.login)
+    data?.flush()
+    this.item = result
   }
 }

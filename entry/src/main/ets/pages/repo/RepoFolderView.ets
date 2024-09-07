@@ -1,11 +1,12 @@
 import { DerivedNavPathStack } from '../../common/DerivedNavPathStack';
 import { RepoModel } from '../../model/RepoModel';
-import { router} from '@kit.ArkUI';
+import { promptAction, router} from '@kit.ArkUI';
 import { rcp } from '@kit.RemoteCommunicationKit';
 import { preferences } from '@kit.ArkData';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { RepoTreeModel } from '../../model/RepoTreeModel';
 import { RepoTreeParam } from './RepoTreeView';
+import { efRcpClientApi } from '@yunkss/ef_rcp';
 
 @Builder
 export function RepoFolderViewBuilder(name: string, param: Object) {
@@ -105,24 +106,21 @@ export struct RepoFolderView {
     .title(this.path)
   }
 
-  getContents() {
-    const session = rcp.createSession()
-    // https://gitee.com/api/v5/users/fandongtongxue_admin/starred?access_token=8b54574d49a35d59fcbff25c54d3e934&limit=20&sort=created&direction=desc
+  async getContents() {
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
     let url = `https://gitee.com/api/v5/repos/${this.name}/contents/${this.path}?access_token=${tokenData.getSync('access_token', '')}&ref=${this.ref}`
-    console.log('当前请求URL:',url)
-    session.get(url).then((response) => {
-      console.info(`Response succeeded: ${response}`);
-      let jsonStr = response.toString()
-      if (jsonStr != null) {
-        let result: Array<RepoTreeModel> = JSON.parse(jsonStr)
-        this.result = result
-        this.isLoading = false
-      }
-    }).catch((err: BusinessError) => {
-      console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
-      this.isLoading = false
+    let response = await efRcpClientApi.get<Array<RepoTreeModel>>({
+      url: url
     })
+    if (response.error) {
+      this.isLoading = false
+      promptAction.showToast({
+        message: response.error.message
+      })
+      return
+    }
+    this.result = response.data!
+    this.isLoading = false
   }
 
   encodeNonChineseCharacters(str: string): string {

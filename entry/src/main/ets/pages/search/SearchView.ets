@@ -1,3 +1,4 @@
+import { SearchRepoListView } from './SearchRepoListView'
 import { SearchUserListView } from './SearchUserListView'
 
 @Component
@@ -20,7 +21,7 @@ export struct SearchView {
             .margin(15)
           Tabs(){
             TabContent(){
-
+              SearchRepoListView({q: this.q})
             }.tabBar('仓库')
             TabContent(){
               SearchUserListView({q: this.q})

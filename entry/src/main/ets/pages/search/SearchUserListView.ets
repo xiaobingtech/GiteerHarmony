@@ -4,6 +4,8 @@ import { UserItem } from './UserItem'
 import { rcp } from '@kit.RemoteCommunicationKit'
 import { BusinessError } from '@kit.BasicServicesKit'
 import { preferences } from '@kit.ArkData'
+import { efRcpClientApi } from '@yunkss/ef_rcp'
+import { promptAction } from '@kit.ArkUI'
 
 @Component
 export struct SearchUserListView{
@@ -71,30 +73,27 @@ export struct SearchUserListView{
     this.getUsers()
   }
 
-  getUsers() {
-    const session = rcp.createSession()
-    // https://gitee.com/api/v5/users/fandongtongxue_admin/starred?access_token=8b54574d49a35d59fcbff25c54d3e934&limit=20&sort=created&direction=desc
-    let userData = preferences.getPreferencesSync(getContext(this), { name: 'user.db' })
+  async getUsers() {
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
     let url = `https://gitee.com/api/v5/search/users?access_token=${tokenData.getSync('access_token', '')}&perpage=100&page=${this.page}&order=desc&q=${this.q}`
-    console.log('当前请求URL:',url)
-    session.get(url).then((response) => {
-      console.info(`Response succeeded: ${response}`);
-      let jsonStr = response.toString()
-      if (jsonStr != null) {
-        let result: Array<UserModel> = JSON.parse(jsonStr)
-        if (this.page == 1) {
-          this.users = result
-        }else{
-          this.users.push(...result)
-        }
-      }
-      this.isRefreshing = false
-      this.isFooterRefreshing = false
-    }).catch((err: BusinessError) => {
-      console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
-      this.isRefreshing = false
-      this.isFooterRefreshing = false
+    let response = await efRcpClientApi.get<Array<UserModel>>({
+      url: url
     })
+    if (response.error) {
+      this.isRefreshing = false
+      this.isFooterRefreshing = false
+      promptAction.showToast({
+        message: response.error.message
+      })
+      return
+    }
+    let result = response.data
+    if (this.page == 1) {
+      this.users = result!
+    }else{
+      this.users.push(...result!)
+    }
+    this.isRefreshing = false
+    this.isFooterRefreshing = false
   }
 }
