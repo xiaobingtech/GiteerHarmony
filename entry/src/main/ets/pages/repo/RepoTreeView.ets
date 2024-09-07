@@ -56,21 +56,13 @@ export struct RepoTreeView {
                     this.getContents(item.path, item)
                   }else{
                     //打开文件
+                    console.log('当前文件地址', item.download_url)
                     let strings = item.download_url.split('/')
                     let fileName = strings[strings.length - 1]
                     let fileNameStrs = fileName.split('.')
                     let suffix = fileNameStrs[fileNameStrs.length - 1]
-                    let encodeUrl = encodeURIComponent(fileName)
 
-                    // 获取除最后一个元素外的所有元素
-                    let reducedArray: string[] = strings.slice(0, strings.length - 1);
-
-                    // 将剩下的元素以 "/" 拼接
-                    let joinedString: string = reducedArray.join("/");
-
-                    // 将剩下的元素和字符串B用 "/" 拼接
-                    let result: string = joinedString + "/" + encodeUrl;
-
+                    let result = this.encodeNonChineseCharacters(item.download_url)
 
                     if (suffix == 'jpg' || suffix == 'png') {
                       router.pushUrl({
@@ -124,5 +116,13 @@ export struct RepoTreeView {
       console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
       this.isLoading = false
     })
+  }
+
+  encodeNonChineseCharacters(str: string): string {
+    // 使用正则表达式匹配非汉字字符
+    return str.replace(/([^\u4e00-\u9fa5]+)/g, (match) => {
+      // 对匹配到的非汉字字符进行编码
+      return encodeURIComponent(match);
+    });
   }
 }

@@ -66,96 +66,100 @@ export struct EventItem {
         .onClick(() => {
           this.avatarClick(this.item)
         })
-      Text(){
-        Span(this.item?.actor.name)
-        Span(' ')
-        if (this.item?.type == 'PushEvent') {
-          Span('推送到了')
+      Column({space: 5}){
+        Text(){
+          Span(this.item?.actor.name)
           Span(' ')
-          if (this.item.payload.commits.length > 0) {
-            this.repoBuilder()
-            Span(' 的')
-            this.refBuilder()
-            Span(' 分支')
-            this.commitBuilder()
+          if (this.item?.type == 'PushEvent') {
+            Span('推送到了')
             Span(' ')
-            Span(this.item.payload.commits[0].message)
-          }else{
+            if (this.item.payload.commits.length > 0) {
+              this.repoBuilder()
+              Span(' 的')
+              this.refBuilder()
+              Span(' 分支')
+              this.commitBuilder()
+              Span(' ')
+              Span(this.item.payload.commits[0].message)
+            }else{
+              this.repoBuilder()
+              Span(' 的')
+              this.refBuilder()
+              Span(' 分支')
+            }
+          }else if (this.item?.type == 'MemberEvent'){
+            Span('加入了仓库 ')
             this.repoBuilder()
-            Span(' 的')
-            this.refBuilder()
-            Span(' 分支')
-          }
-        }else if (this.item?.type == 'MemberEvent'){
-          Span('加入了仓库 ')
-          this.repoBuilder()
-        }else if (this.item?.type == 'CreateEvent'){
-          Span('创建了仓库 ')
-          if (this.item.payload.ref_type == 'branch') {
+          }else if (this.item?.type == 'CreateEvent'){
+            Span('创建了仓库 ')
+            if (this.item.payload.ref_type == 'branch') {
+              this.repoBuilder()
+              Span(' 的')
+              this.refBuilder()
+              Span(' 分支')
+            }else{
+              this.repoBuilder()
+            }
+          }else if (this.item?.type == 'IssueCommentEvent'){
+            Span('发表了新的任务评论 ')
             this.repoBuilder()
-            Span(' 的')
-            this.refBuilder()
-            Span(' 分支')
-          }else{
-            this.repoBuilder()
-          }
-        }else if (this.item?.type == 'IssueCommentEvent'){
-          Span('发表了新的任务评论 ')
-          this.repoBuilder()
-          Span(' 的 ')
-          Span(this.item.payload.issue.title)
-            .fontColor($r('app.color.accent'))
-            .onClick(() => {
-              this.issueClick(this.item)
-            })
-          Span(' ')
-          Span(this.item.payload.comment.body)
-        }else if (this.item?.type == 'StarEvent'){
-          Span('Star了仓库 ')
-          this.repoBuilder()
-        }else if (this.item?.type == 'ForkEvent'){
-          Span('Fork了仓库 ')
-          this.repoBuilder()
-        }else if (this.item?.type == 'FollowEvent'){
-          Span('关注了 ')
-          Span(this.item.payload.target.name)
-        }else if (this.item?.type == 'PullRequestEvent'){
-          Span(this.item.payload.action)
-          Span(' 了 ')
-          this.repoBuilder()
-          Span(' 的PullRequest ')
-          Span(this.item.payload.title)
-            .fontColor($r('app.color.accent'))
-            .onClick(() =>{
-              this.pullClick(this.item)
-            })
-        }else if (this.item?.type == 'PullRequestCommentEvent'){
-          Span('发表了新的Pull Request评论')
-          Span(' ')
-          this.repoBuilder()
-          Span(' 的PullRequest ')
-          Span(this.item.payload.pull_request.title)
-            .fontColor($r('app.color.accent'))
-            .onClick(() =>{
-              this.pullClick(this.item)
-            })
-          Span(' 的')
-          Span(this.item.payload.comment.body)
-        }else if (this.item?.type == 'IssueEvent'){
-          if (this.item.payload != null) {
+            Span(' 的 ')
+            Span(this.item.payload.issue.title)
+              .fontColor($r('app.color.accent'))
+              .onClick(() => {
+                this.issueClick(this.item)
+              })
             Span(' ')
+            Span(this.item.payload.comment.body)
+          }else if (this.item?.type == 'StarEvent'){
+            Span('Star了仓库 ')
+            this.repoBuilder()
+          }else if (this.item?.type == 'ForkEvent'){
+            Span('Fork了仓库 ')
+            this.repoBuilder()
+          }else if (this.item?.type == 'FollowEvent'){
+            Span('关注了 ')
+            Span(this.item.payload.target.name)
+          }else if (this.item?.type == 'PullRequestEvent'){
             Span(this.item.payload.action)
             Span(' 了 ')
             this.repoBuilder()
-            Span(' 的Issue ')
+            Span(' 的PullRequest ')
             Span(this.item.payload.title)
               .fontColor($r('app.color.accent'))
               .onClick(() =>{
-                this.issueClick(this.item)
+                this.pullClick(this.item)
               })
+          }else if (this.item?.type == 'PullRequestCommentEvent'){
+            Span('发表了新的Pull Request评论')
+            Span(' ')
+            this.repoBuilder()
+            Span(' 的PullRequest ')
+            Span(this.item.payload.pull_request.title)
+              .fontColor($r('app.color.accent'))
+              .onClick(() =>{
+                this.pullClick(this.item)
+              })
+            Span(' 的 ')
+            Span(this.item.payload.comment.body)
+          }else if (this.item?.type == 'IssueEvent'){
+            if (this.item.payload != null) {
+              Span(' ')
+              Span(this.item.payload.action)
+              Span(' 了 ')
+              this.repoBuilder()
+              Span(' 的Issue ')
+              Span(this.item.payload.title)
+                .fontColor($r('app.color.accent'))
+                .onClick(() =>{
+                  this.issueClick(this.item)
+                })
+            }
           }
         }
+        Text(this.item.created_at)
       }
+      .alignItems(HorizontalAlign.Start)
       .width('calc(100% - 70vp)')
     }
     .alignItems(VerticalAlign.Top)

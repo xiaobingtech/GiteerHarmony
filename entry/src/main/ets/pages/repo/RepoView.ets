@@ -6,8 +6,9 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { RepoModel } from '../../model/RepoModel';
 import { ReadmeModel } from '../../model/ReadmeModel';
 import { Base64 } from '@ohos/base64';
-import { lvMarkdownIn } from '@luvi/lv-markdown-in'
+import { lvMarkdownIn, mdRegister  } from '@luvi/lv-markdown-in'
 import util from '@ohos.util';
+import { router } from '@kit.ArkUI';
 
 
 @Builder
@@ -183,6 +184,20 @@ export struct RepoView {
     })
     .title('仓库')
     .menus(this.NavigationMenus())
+  }
+
+  aboutToAppear(): void {
+    mdRegister.HandleHyperlink = (url: string) => {
+      console.log('当前Markdown点击URL', url)
+      this.derivedStack?.pushPath({name: 'WebView', param: url})
+    }
+    mdRegister.HandleImage = (url: string) => {
+      console.log('当前Markdown点击图像', url)
+      router.pushUrl({
+        url: 'pages/repo/ImagePreviewPage',
+        params: [url]
+      })
+    }
   }
 
   getRepo() {

@@ -3,6 +3,7 @@
     "pages/Index",
     "pages/WebView",
     "pages/TabPage",
-    "pages/WelcomePage"
+    "pages/WelcomePage",
+    "pages/repo/ImagePreviewPage"
   ]
 }
