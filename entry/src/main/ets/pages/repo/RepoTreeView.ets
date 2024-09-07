@@ -68,14 +68,14 @@ export struct RepoTreeView {
                     this.derivedStack?.pushPath({name: 'RepoFolderView', param: param})
                   }else{
                     //打开文件
-                    console.log('当前文件地址', item.download_url)
+
                     let strings = item.download_url.split('/')
                     let fileName = strings[strings.length - 1]
                     let fileNameStrs = fileName.split('.')
                     let suffix = fileNameStrs[fileNameStrs.length - 1]
 
                     let result = this.encodeNonChineseCharacters(item.download_url)
-
+                    console.log('当前文件地址', result)
                     if (suffix == 'jpg' || suffix == 'png') {
                       router.pushUrl({
                         url: 'pages/repo/ImagePreviewPage',
@@ -130,7 +130,7 @@ export struct RepoTreeView {
 
   encodeNonChineseCharacters(str: string): string {
     // 使用正则表达式匹配非汉字字符
-    return str.replace(/([^\u4e00-\u9fa5]+)/g, (match) => {
+    return str.replace(/[\u3400-\u9FFF\u3000-\u303f\uff00-\uffef]/g, (match) => {
       // 对匹配到的非汉字字符进行编码
       return encodeURIComponent(match);
     });

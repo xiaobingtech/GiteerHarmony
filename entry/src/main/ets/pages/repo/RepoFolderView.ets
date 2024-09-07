@@ -127,7 +127,7 @@ export struct RepoFolderView {
 
   encodeNonChineseCharacters(str: string): string {
     // 使用正则表达式匹配非汉字字符
-    return str.replace(/[\u3400-\u9FFF]/g, (match) => {
+    return str.replace(/[\u3400-\u9FFF\u3000-\u303f\uff00-\uffef]/g, (match) => {
       // 对匹配到的非汉字字符进行编码
       return encodeURIComponent(match);
     });
