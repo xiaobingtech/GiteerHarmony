@@ -23,7 +23,7 @@ export struct UserListView{
 
   @State page: number = 1
 
-  @State isRefreshing: boolean = false
+  @State isRefreshing: boolean = true
   @State isFooterRefreshing:boolean = false
 
   @Prop @Watch('getUsers') q:string
@@ -38,8 +38,8 @@ export struct UserListView{
 
   build() {
     NavDestination(){
-      Row() {
-        Column() {
+      Column() {
+        if (!this.isRefreshing) {
           Refresh({refreshing:$$this.isRefreshing}){
             List(){
               ForEach(this.users, (item: UserModel) => {
@@ -65,6 +65,10 @@ export struct UserListView{
           })
           .refreshOffset(64)
           .pullToRefresh(true)
+        }else{
+          LoadingProgress()
+            .width(100)
+            .height('100%')
         }
       }
       .width('100%')
@@ -86,7 +90,7 @@ export struct UserListView{
   }
 
   footerRefresh(){
-    if (this.isFooterRefreshing) {
+    if (this.isFooterRefreshing || this.users.length < 100) {
       return
     }
     this.isFooterRefreshing = true

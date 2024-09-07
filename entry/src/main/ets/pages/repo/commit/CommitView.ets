@@ -16,7 +16,7 @@ struct CommitView{
 
   @State name: string = ''
 
-  @State isRefreshing: boolean = false
+  @State isRefreshing: boolean = true
   @State isFooterRefreshing:boolean = false
 
   @State page: number = 1
@@ -28,7 +28,7 @@ struct CommitView{
   build() {
     NavDestination(){
       Column(){
-        if (this.commits.length > 0) {
+        if (!this.isRefreshing) {
           Refresh({refreshing: $$this.isRefreshing}){
             List(){
               ForEach(this.commits, (item: CommitModel) => {
@@ -79,7 +79,7 @@ struct CommitView{
   }
 
   footerRefresh(){
-    if (this.isFooterRefreshing) {
+    if (this.isFooterRefreshing || this.commits.length < 100) {
       return
     }
     this.isFooterRefreshing = true

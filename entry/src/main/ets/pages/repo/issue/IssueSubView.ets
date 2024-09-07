@@ -9,9 +9,9 @@ import { IssueItem } from './IssueItem'
 export struct IssueSubView {
   @Prop name: string = ''
   /// Issue的状态: open（开启的）, progressing(进行中), closed（关闭的）, rejected（拒绝的）。
-  @Prop state: string = 'open'
+  @Prop state: string = ''
   @State page: number = 1
-  @State isRefreshing: boolean = false
+  @State isRefreshing: boolean = true
   @State isFooterRefreshing: boolean = false
   @Prop type: string = ''
   @State issues: Array<IssueModel> = []
@@ -24,7 +24,7 @@ export struct IssueSubView {
 
   build() {
     Column() {
-      if (this.issues.length > 0) {
+      if (!this.isRefreshing) {
         Refresh({ refreshing: $$this.isRefreshing }) {
           List() {
             ForEach(this.issues, (item: IssueModel) => {
@@ -74,7 +74,7 @@ export struct IssueSubView {
   }
 
   footerRefresh() {
-    if (this.isFooterRefreshing) {
+    if (this.isFooterRefreshing || this.issues.length < 100) {
       return
     }
     this.isFooterRefreshing = true

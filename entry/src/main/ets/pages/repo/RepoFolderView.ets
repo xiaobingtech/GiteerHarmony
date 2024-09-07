@@ -72,7 +72,7 @@ export struct RepoFolderView {
 
                     let result = this.encodeNonChineseCharacters(item.download_url)
                     console.log('当前文件地址', result)
-                    if (suffix == 'jpg' || suffix == 'png') {
+                    if (suffix == 'jpg' || suffix == 'png' || suffix == 'gif' || suffix == 'webp') {
                       router.pushUrl({
                         url: 'pages/repo/ImagePreviewPage',
                         params: [result]

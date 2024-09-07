@@ -19,7 +19,7 @@ export struct RepoListView{
 
   @State page: number = 1
 
-  @State isRefreshing: boolean = false
+  @State isRefreshing: boolean = true
   @State isFooterRefreshing:boolean = false
 
   @State repos: Array<RepoModel> = []
@@ -29,7 +29,7 @@ export struct RepoListView{
   build() {
     NavDestination(){
       Column(){
-        if (this.repos.length > 0) {
+        if (!this.isRefreshing) {
           Refresh({refreshing: $$this.isRefreshing}){
             List(){
               ForEach(this.repos, (item: RepoModel) => {
@@ -84,7 +84,7 @@ export struct RepoListView{
   }
 
   footerRefresh(){
-    if (this.isFooterRefreshing) {
+    if (this.isFooterRefreshing || this.repos.length < 100) {
       return
     }
     this.isFooterRefreshing = true

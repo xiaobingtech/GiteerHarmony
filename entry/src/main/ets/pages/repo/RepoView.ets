@@ -31,7 +31,7 @@ export struct RepoView {
 
   @Builder NavigationMenus() {
     Row() {
-      SymbolGlyph($r(this.item?.stared ? 'sys.symbol.star' : 'sys.symbol.star_fill'))
+      SymbolGlyph($r(this.item?.stared ? 'sys.symbol.star_fill' : 'sys.symbol.star'))
         .fontSize(24)
     }
     .padding(15)
@@ -41,16 +41,18 @@ export struct RepoView {
       let url = `https://gitee.com/api/v5/user/starred/${this.item?.full_name}?access_token=${tokenData.getSync('access_token', '')}`
       console.log('当前请求URL:',url)
       if (this.item?.stared) {
-        session.put(url).then((response) => {
+        session.delete(url).then((response) => {
           console.info(`Response succeeded: ${response}`);
           // this.item?.stared = false
+          this.getRepo()
         }).catch((err: BusinessError) => {
           console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
         })
       }else{
-        session.delete(url).then((response) => {
+        session.put(url).then((response) => {
           console.info(`Response succeeded: ${response}`);
           // this.item?.stared = true
+          this.getRepo()
         }).catch((err: BusinessError) => {
           console.error(`Response err: Code is ${err.code}, message is ${err.message}`);
         })
@@ -184,6 +186,7 @@ export struct RepoView {
       }else{
         LoadingProgress()
           .width(100)
+          .height('100%')
       }
     }
     .onReady((context) => {

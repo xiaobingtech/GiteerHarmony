@@ -8,7 +8,7 @@ import { BusinessError } from '@kit.BasicServicesKit'
 @Component
 export struct MsgView{
   @State page: number = 1
-  @State isRefreshing: boolean = false
+  @State isRefreshing: boolean = true
   @State isFooterRefreshing: boolean = false
   @State msgs: Array<MsgModelList> = []
   @State latestPerGroup: Array<MsgModelList> = []
@@ -20,7 +20,7 @@ export struct MsgView{
 
   build() {
     Column() {
-      if (this.latestPerGroup.length > 0) {
+      if (!this.isRefreshing) {
         Refresh({ refreshing: $$this.isRefreshing }) {
           List() {
             ForEach(this.latestPerGroup, (item: MsgModelList) => {
@@ -68,7 +68,7 @@ export struct MsgView{
   }
 
   footerRefresh() {
-    if (this.isFooterRefreshing) {
+    if (this.isFooterRefreshing || this.msgs.length < 100) {
       return
     }
     this.isFooterRefreshing = true

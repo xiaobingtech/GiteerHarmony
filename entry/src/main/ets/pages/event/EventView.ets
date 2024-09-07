@@ -9,7 +9,7 @@ import { it } from '@ohos/hypium'
 @Component
 export struct EventView{
 
-  @State isRefreshing: boolean = false
+  @State isRefreshing: boolean = true
 
   @State prev_id: number = 0
 
@@ -89,7 +89,7 @@ export struct EventView{
   build() {
     Navigation(){
       Column(){
-        if (this.events.length > 0) {
+        if (!this.isRefreshing) {
           Refresh({refreshing: $$this.isRefreshing}){
             List(){
               ForEach(this.events, (item: EventModel) => {

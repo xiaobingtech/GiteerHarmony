@@ -63,7 +63,7 @@ export struct SearchUserListView{
   }
 
   footerRefresh(){
-    if (this.isFooterRefreshing) {
+    if (this.isFooterRefreshing || this.users.length < 100) {
       return
     }
     this.isFooterRefreshing = true

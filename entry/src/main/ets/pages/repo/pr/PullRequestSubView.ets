@@ -8,9 +8,9 @@ import { PullRequestModel } from '../../../model/PullRequestModel'
 @Component
 export struct PullRequestSubView {
   @Prop name: string = ''
-  @Prop state: string = 'open'
+  @Prop state: string = ''
   @State page: number = 1
-  @State isRefreshing: boolean = false
+  @State isRefreshing: boolean = true
   @State isFooterRefreshing: boolean = false
   @Prop type: string = ''
   @State pulls: Array<PullRequestModel> = []
@@ -23,7 +23,7 @@ export struct PullRequestSubView {
 
   build() {
     Column() {
-      if (this.pulls.length > 0) {
+      if (!this.isRefreshing) {
         Refresh({ refreshing: $$this.isRefreshing }) {
           List() {
             ForEach(this.pulls, (item: PullRequestModel) => {
@@ -73,7 +73,7 @@ export struct PullRequestSubView {
   }
 
   footerRefresh() {
-    if (this.isFooterRefreshing) {
+    if (this.isFooterRefreshing || this.pulls.length < 100) {
       return
     }
     this.isFooterRefreshing = true
