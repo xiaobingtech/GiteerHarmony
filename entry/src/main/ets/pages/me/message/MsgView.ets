@@ -79,7 +79,9 @@ export struct MsgView{
   getMsgs() {
     const session = rcp.createSession()
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
-    session.get(`https://gitee.com/api/v5/notifications/messages?access_token=${tokenData.getSync('access_token', '')}&per_page=100&page=${this.page}`).then((response) => {
+    let url = `https://gitee.com/api/v5/notifications/messages?access_token=${tokenData.getSync('access_token', '')}&per_page=100&page=${this.page}`
+    console.log('当前请求URL', url)
+    session.get(url).then((response) => {
       console.info(`Response succeeded: ${response}`);
       let jsonStr = response.toString()
       if (jsonStr != null) {

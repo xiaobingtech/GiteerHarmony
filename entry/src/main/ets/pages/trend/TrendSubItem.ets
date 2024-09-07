@@ -5,7 +5,7 @@ export struct TrendSubItem{
   @Prop item: RepoModel;
   build() {
     Row({space: 15}){
-      if (this.item.owner.portrait_url != '') {
+      if (!this.item.owner.portrait_url.startsWith('no_portrait.png')) {
         Image(this.item.owner.portrait_url)
           .width(50)
           .borderRadius(25)

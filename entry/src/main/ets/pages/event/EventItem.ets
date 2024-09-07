@@ -30,7 +30,7 @@ export struct EventItem {
   @Builder
   repoBuilder(){
     Span(this.item.repo.human_name)
-    .fontColor(Color.Blue)
+    .fontColor($r('app.color.accent'))
     .onClick(() =>{
       this.repoClick(this.item)
     })
@@ -38,7 +38,7 @@ export struct EventItem {
   @Builder
   refBuilder(){
     Span(this.item.payload.ref.split('/').pop())
-      .fontColor(Color.Blue)
+      .fontColor($r('app.color.accent'))
       .onClick(() =>{
         this.repoClick(this.item)
       })
@@ -47,7 +47,7 @@ export struct EventItem {
   @Builder
   commitBuilder(){
     Span(this.item.payload.commits[0].sha.substring(0, 7))
-      .fontColor(Color.Blue)
+      .fontColor($r('app.color.accent'))
       .onClick(() =>{
         this.commitClick(this.item)
       })
@@ -97,7 +97,7 @@ export struct EventItem {
           this.repoBuilder()
           Span(' 的 ')
           Span(this.item.payload.issue.title)
-            .fontColor(Color.Blue)
+            .fontColor($r('app.color.accent'))
             .onClick(() => {
               this.issueClick(this.item)
             })
@@ -118,7 +118,7 @@ export struct EventItem {
           this.repoBuilder()
           Span(' 的PullRequest ')
           Span(this.item.payload.title)
-            .fontColor(Color.Blue)
+            .fontColor($r('app.color.accent'))
             .onClick(() =>{
               this.pullClick(this.item)
             })
@@ -131,7 +131,7 @@ export struct EventItem {
           this.repoBuilder()
           Span(' 的Issue ')
           Span(this.item.payload.title)
-            .fontColor(Color.Blue)
+            .fontColor($r('app.color.accent'))
             .onClick(() =>{
               this.issueClick(this.item)
             })

@@ -9,15 +9,30 @@ export function SettingViewBuilder(name: string, param: Object) {
 @Component
 struct SettingView{
   build() {
-    Text('退出登录')
-      .onClick(() => {
-        let data = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
-        data.putSync('access_token', '')
-        data.putSync('refresh_token', '')
-        data.flush()
-        router.replaceUrl({
-          url: "pages/Index"
-        })
-      })
+    NavDestination(){
+      Column(){
+        List(){
+          ListItem(){
+            Row(){
+              Text('退出登录')
+              Blank()
+              SymbolGlyph($r('sys.symbol.chevron_right'))
+            }
+            .width('100%')
+          }
+          .onClick(() => {
+            let data = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
+            data.putSync('access_token', '')
+            data.putSync('refresh_token', '')
+            data.flush()
+            router.replaceUrl({
+              url: "pages/Index"
+            })
+          })
+          .padding(15)
+        }
+      }
+    }
+    .title('设置')
   }
 }

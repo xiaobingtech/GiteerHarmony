@@ -85,7 +85,9 @@ export struct TrendSubView{
 
   getProjects() {
     const session = rcp.createSession()
-    session.get(`https://gitee.com/api/v3/projects/${this.type}?page=${this.page}`).then((response) => {
+    let url = `https://gitee.com/api/v3/projects/${this.type}?page=${this.page}`
+    console.log('当前请求URL', url)
+    session.get(url).then((response) => {
       console.info(`Response succeeded: ${response}`);
       let jsonStr = response.toString()
       if (jsonStr != null) {

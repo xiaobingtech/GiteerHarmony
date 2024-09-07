@@ -23,6 +23,10 @@
     {
       "name": "freshRed",
       "value": "#E92F4F"
+    },
+    {
+      "name": "accent",
+      "value": "#0B77EF"
     }
   ]
 }

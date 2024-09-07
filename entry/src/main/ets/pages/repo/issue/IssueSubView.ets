@@ -85,7 +85,9 @@ export struct IssueSubView {
   getIssues() {
     const session = rcp.createSession()
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
-    session.get(`https://gitee.com/api/v5/repos/${this.name}/issues?access_token=${tokenData.getSync('access_token', '')}&per_page=100&page=${this.page}&state=${this.state}`).then((response) => {
+    let url = `https://gitee.com/api/v5/repos/${this.name}/issues?access_token=${tokenData.getSync('access_token', '')}&per_page=100&page=${this.page}&state=${this.state}`
+    console.log('当前请求URL', url)
+    session.get(url).then((response) => {
       console.info(`Response succeeded: ${response}`);
       let jsonStr = response.toString()
       if (jsonStr != null) {
