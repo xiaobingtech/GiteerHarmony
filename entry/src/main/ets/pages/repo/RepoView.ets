@@ -60,11 +60,11 @@ export struct RepoView {
 
   build() {
     NavDestination(){
-      if (this.item?.name != '') {
+      if (this.item) {
         Scroll(){
           Column(){
             Row({space: 15}){
-              if (this.item?.owner.avatar_url != '') {
+              if (this.item?.owner.avatar_url) {
                 Image(this.item?.owner.avatar_url)
                   .width(50)
                   .borderRadius(25)
@@ -199,10 +199,26 @@ export struct RepoView {
     .menus(this.NavigationMenus())
   }
 
+  extractGiteeRepo(url: string): string | null {
+    // 正则表达式匹配 https://gitee.com/ 后面跟随的任意字符（非斜杠），直到遇到下一个斜杠，然后是仓库名（任意字符直到字符串结束或遇到问号）
+    const pattern = /^https:\/\/gitee\.com\/([^\/]+\/[^\/?]+)/;
+    const match = url.match(pattern);
+    if (match) {
+      // match[1] 包含第一个括号内匹配的内容，即用户名/仓库名
+      return match[1];
+    }
+    return null;
+  }
+
   aboutToAppear(): void {
     mdRegister.HandleHyperlink = (url: string) => {
       console.log('当前Markdown点击URL', url)
-      this.derivedStack?.pushPath({name: 'WebView', param: url})
+      let ret = this.extractGiteeRepo(url)
+      if (ret == null) {
+        this.derivedStack?.pushPath({name: 'WebView', param: url})
+      }else {
+        this.derivedStack?.pushPath({name: 'RepoView', param: ret})
+      }
     }
     mdRegister.HandleImage = (url: string) => {
       console.log('当前Markdown点击图像', url)
