@@ -169,7 +169,7 @@ export struct RepoView {
               SymbolGlyph($r('sys.symbol.arrow_clockwise'))
             }
             .onClick(() => {
-
+              this.getRepoReadme()
             })
             .width('100%')
             .height(44)
