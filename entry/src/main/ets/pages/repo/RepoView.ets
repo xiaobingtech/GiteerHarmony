@@ -306,9 +306,11 @@ export struct RepoView {
     return data.map((text, index) => ({
       title: text,
       action: () => {
-        this.radioIndex = index;
-        this.ref = this.branch[index].name
-        this.getRepoReadme()
+        if (this.radioIndex != index) {
+          this.radioIndex = index;
+          this.ref = this.branch[index].name
+          this.getRepoReadme()
+        }
       }
     } as SheetInfo));
   }
