@@ -1,5 +1,5 @@
 import { webview } from '@kit.ArkWeb';
-import { router } from '@kit.ArkUI';
+import { promptAction, router } from '@kit.ArkUI';
 import { Constraints } from '../Constraints';
 import { rcp } from '@kit.RemoteCommunicationKit';
 import { LoginModel } from '../model/LoginModel';
@@ -7,6 +7,7 @@ import { preferences } from '@kit.ArkData'
 import { BusinessError } from '@kit.BasicServicesKit';
 import { UserModel } from '../model/UserModel';
 import { DerivedNavPathStack } from '../common/DerivedNavPathStack';
+import { efRcpClientApi } from '@yunkss/ef_rcp';
 
 @Builder
 export function WebViewBuilder(name: string, param: Object) {
@@ -65,7 +66,33 @@ export struct WebView {
     .title(this.title)
   }
 
-  handleCode(code: string|undefined) {
+  async handleCode(code: string|undefined) {
+    let response = await efRcpClientApi.post<LoginModel>({
+      url: 'oauth/token',
+      query: {
+        'grant_type':'authorization_code',
+        'code': code,
+        'client_id': Constraints.client_id,
+        'redirect_uri': Constraints.redirect_uri,
+        'client_secret': Constraints.client_secret
+      }
+    })
+    if (response.error) {
+      promptAction.showToast({
+        message: response.error.message
+      })
+      return
+    }
+    let result = response.data
+    //存储数据
+    let data = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
+    data?.putSync('access_token', result?.access_token)
+    data?.putSync('refresh_token', result?.refresh_token)
+    data?.flush()
+    this.getUser(result!.access_token)
+    return
+
+
     const session = rcp.createSession()
     session.post("https://gitee.com/oauth/token", {
       'grant_type':'authorization_code',
