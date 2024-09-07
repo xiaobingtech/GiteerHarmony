@@ -11,24 +11,24 @@ struct ImagePreViewPage {
     this.imagePreViewOption
       .setImage(this.images)
       .setLongPressListener((_, index) => {
-        promptAction.showToast({ message: "长按" + index.toString() })
+        // promptAction.showToast({ message: "长按" + index.toString() })
       })
       .setOnPullDownListener((index) => {
         router.back()
       })
       .setOnClickListener((_, index) => {
-        promptAction.showToast({ message: "单击" + index.toString() })
+        // promptAction.showToast({ message: "单击" + index.toString() })
       })
       .setAboutToTurnPageListener((page) => {
-        promptAction.showToast({ message: "即将去往" + page.toString() })
+        // promptAction.showToast({ message: "即将去往" + page.toString() })
       })
       .setCachedCount(0)
       .setMinScale(0.5)
       .setBackgroundColor(Color.White)
       .setFlipListener(() => {
-        promptAction.showToast({
-          message: "翻页"
-        })
+        // promptAction.showToast({
+        //   message: "翻页"
+        // })
       })
       .setSharedIdGenerate((item,index) => JSON.stringify(item) + index)
     // .setIndicatorType(IndicatorType.None)

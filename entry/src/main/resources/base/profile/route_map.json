@@ -59,6 +59,11 @@
       "name": "MessageView",
       "pageSourceFile": "src/main/ets/pages/me/message/MessageView.ets",
       "buildFunction": "MessageViewBuilder"
+    },
+    {
+      "name": "RepoFolderView",
+      "pageSourceFile": "src/main/ets/pages/repo/RepoFolderView.ets",
+      "buildFunction": "RepoFolderViewBuilder"
     }
   ]
 }

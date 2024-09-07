@@ -5,22 +5,18 @@ import { rcp } from '@kit.RemoteCommunicationKit';
 import { preferences } from '@kit.ArkData';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { RepoTreeModel } from '../../model/RepoTreeModel';
-
-export class RepoTreeParam {
-  name: string|undefined = ''
-  ref: string = ''
-  path: string = ''
-}
+import { RepoTreeParam } from './RepoTreeView';
 
 @Builder
-export function RepoTreeViewBuilder(name: string, param: Object) {
-  RepoTreeView()
+export function RepoFolderViewBuilder(name: string, param: Object) {
+  RepoFolderView()
 }
 
 @Component
-export struct RepoTreeView {
+export struct RepoFolderView {
 
   @State name: string|undefined = ''
+  @State path: string = ''
   @State ref: string = ''
 
   @State isLoading:boolean = true
@@ -68,14 +64,14 @@ export struct RepoTreeView {
                     this.derivedStack?.pushPath({name: 'RepoFolderView', param: param})
                   }else{
                     //打开文件
-                    console.log('当前文件地址', item.download_url)
+
                     let strings = item.download_url.split('/')
                     let fileName = strings[strings.length - 1]
                     let fileNameStrs = fileName.split('.')
                     let suffix = fileNameStrs[fileNameStrs.length - 1]
 
                     let result = this.encodeNonChineseCharacters(item.download_url)
-
+                    console.log('当前文件地址', result)
                     if (suffix == 'jpg' || suffix == 'png') {
                       router.pushUrl({
                         url: 'pages/repo/ImagePreviewPage',
@@ -100,19 +96,20 @@ export struct RepoTreeView {
       let param = context.pathInfo.param as RepoTreeParam
       this.name = param.name
       this.ref = param.ref
+      this.path = param.path
       this.derivedStack = context.pathStack as DerivedNavPathStack
     })
     .onAppear(() =>{
       this.getContents()
     })
-    .title('仓库Tree')
+    .title(this.path)
   }
 
   getContents() {
     const session = rcp.createSession()
     // https://gitee.com/api/v5/users/fandongtongxue_admin/starred?access_token=8b54574d49a35d59fcbff25c54d3e934&limit=20&sort=created&direction=desc
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
-    let url = `https://gitee.com/api/v5/repos/${this.name}/contents?access_token=${tokenData.getSync('access_token', '')}&ref=${this.ref}`
+    let url = `https://gitee.com/api/v5/repos/${this.name}/contents/${this.path}?access_token=${tokenData.getSync('access_token', '')}&ref=${this.ref}`
     console.log('当前请求URL:',url)
     session.get(url).then((response) => {
       console.info(`Response succeeded: ${response}`);
@@ -130,7 +127,7 @@ export struct RepoTreeView {
 
   encodeNonChineseCharacters(str: string): string {
     // 使用正则表达式匹配非汉字字符
-    return str.replace(/([^\u4e00-\u9fa5]+)/g, (match) => {
+    return str.replace(/[\u3400-\u9FFF]/g, (match) => {
       // 对匹配到的非汉字字符进行编码
       return encodeURIComponent(match);
     });
