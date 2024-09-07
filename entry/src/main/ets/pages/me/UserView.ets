@@ -15,6 +15,7 @@ export function UserViewBuilder(name: string, param: Object) {
 export struct UserView{
 
   @State item: UserModel|null = null
+  @State login: string|null = null
 
   private derivedStack: DerivedNavPathStack | null = null
 
@@ -25,7 +26,7 @@ export struct UserView{
   build() {
     NavDestination(){
       Column() {
-        if (this.item?.login != '') {
+        if (this.item) {
           Row({ space: 15 }) {
             Image(this.item?.avatar_url)
               .width(50)
@@ -55,7 +56,7 @@ export struct UserView{
                 let param = new UserListParam()
                 param.isMe = false
                 param.type = 'repos'
-                param.login = this.item?.login
+                param.login = this.login
                 this.derivedStack.pushPath({name: 'RepoListView', param: param})
               }
             })
@@ -72,7 +73,7 @@ export struct UserView{
                 let param = new UserListParam()
                 param.isMe = false
                 param.type = 'subscriptions'
-                param.login = this.item?.login
+                param.login = this.login
                 this.derivedStack.pushPath({name: 'RepoListView', param: param})
               }
             })
@@ -88,8 +89,8 @@ export struct UserView{
               if (this.derivedStack) {
                 let param = new UserListParam()
                 param.isMe = false
-                param.type = 'followers'
-                param.login = this.item?.login
+                param.type = 'following'
+                param.login = this.login
                 this.derivedStack.pushPath({name: 'UserListView', param: param})
               }
             })
@@ -104,9 +105,9 @@ export struct UserView{
             .onClick(() => {
               if (this.derivedStack) {
                 let param = new UserListParam()
-                param.isMe = true
-                param.type = 'following'
-                param.login = this.item?.login
+                param.isMe = false
+                param.type = 'followers'
+                param.login = this.login
                 this.derivedStack.pushPath({name: 'UserListView', param: param})
               }
             })
@@ -116,15 +117,17 @@ export struct UserView{
           .width('100%')
           .height(50)
           Divider()
-          Row(){
-            Text(this.item?.email)
-            Blank()
-            SymbolGlyph($r('sys.symbol.chevron_right'))
+          if (this.item?.email != '') {
+            Row(){
+              Text(this.item?.email)
+              Blank()
+              SymbolGlyph($r('sys.symbol.chevron_right'))
+            }
+            .width('100%')
+            .height(44)
+            .padding(15)
+            Divider()
           }
-          .width('100%')
-          .height(44)
-          .padding(15)
-          Divider()
           Row(){
             Text('私信')
             Blank()
@@ -146,18 +149,18 @@ export struct UserView{
     }
     .onReady((context) => {
       this.derivedStack = context.pathStack as DerivedNavPathStack
-      this.item = context.pathInfo.param as UserModel
+      this.login = context.pathInfo.param as string
     })
     .onAppear(() => {
       this.getUser()
     })
-    .title(this.item?.name)
+    .title('TA')
   }
 
   getUser() {
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
     const session = rcp.createSession()
-    let url = `https://gitee.com/api/v5/users/${this.item?.login}?access_token=${tokenData.getSync('access_token', '')}`
+    let url = `https://gitee.com/api/v5/users/${this.login}?access_token=${tokenData.getSync('access_token', '')}`
     console.log('当前请求URL:', url)
     session.get(url).then((response) => {
       console.info(`Response succeeded: ${response}`);

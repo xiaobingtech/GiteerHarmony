@@ -95,6 +95,45 @@ export interface Payload {
   base: Base;
   issue: Issue;
   comment: Comment
+  pull_request: Pull_request
+}
+
+export interface Pull_request {
+  id: number;
+  url: string;
+  html_url: string;
+  diff_url: string;
+  patch_url: string;
+  issue_url: string;
+  commits_url: string;
+  review_comments_url: string;
+  review_comment_url: string;
+  comments_url: string;
+  number: number;
+  close_related_issue: number;
+  prune_branch: boolean;
+  state: string;
+  assignees_number: number;
+  testers_number: number;
+  assignees: Assignee[];
+  testers: Tester[];
+  milestone: string;
+  labels: string[];
+  locked: boolean;
+  created_at: string;
+  updated_at: string;
+  closed_at?: string;
+  draft: boolean;
+  merged_at: string;
+  mergeable: boolean;
+  can_merge_check: boolean;
+  _links: _link;
+  user: User;
+  ref_pull_requests: string[];
+  title: string;
+  body: string;
+  head: Head;
+  base: Base;
 }
 
 

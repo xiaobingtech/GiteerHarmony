@@ -4,6 +4,7 @@ import { EventModel } from '../../model/EventModel'
 import { BusinessError } from '@kit.BasicServicesKit'
 import { DerivedNavPathStack } from '../../common/DerivedNavPathStack'
 import { EventItem } from './EventItem'
+import { it } from '@ohos/hypium'
 
 @Component
 export struct EventView{
@@ -44,11 +45,15 @@ export struct EventView{
 
   onClickPull(item: EventModel): void {
     // https://gitee.com/harmonyos_codelabs/car-kit-codelab-arkts/pull/169ccb181c0d8a67dc69f774faf13a22fefd8555
+    let url = item.payload.html_url
+    if (url == null) {
+      url = item.payload.pull_request.html_url
+    }
     if (this.derivedStack != null) {
       if (this.derivedStack.size() == 0) {
-        this.derivedStack.pushPath({name: 'WebView', param: item.payload.html_url})
+        this.derivedStack.pushPath({name: 'WebView', param: url})
       }else{
-        this.derivedStack.replacePath({name: 'WebView', param: item.payload.html_url})
+        this.derivedStack.replacePath({name: 'WebView', param: url})
       }
     }
   }
@@ -69,6 +74,18 @@ export struct EventView{
     }
   }
 
+  onClickAvatar(item: EventModel): void {
+    // https://gitee.com/harmonyos_codelabs/car-kit-codelab-arkts/commit/169ccb181c0d8a67dc69f774faf13a22fefd8555
+    let login = item.actor.login
+    if (this.derivedStack != null) {
+      if (this.derivedStack.size() == 0) {
+        this.derivedStack.pushPath({name: 'UserView', param: login})
+      }else{
+        this.derivedStack.replacePath({name: 'UserView', param: login})
+      }
+    }
+  }
+
   build() {
     Navigation(){
       Column(){
@@ -76,7 +93,7 @@ export struct EventView{
           Refresh({refreshing: $$this.isRefreshing}){
             List(){
               ForEach(this.events, (item: EventModel) => {
-                EventItem({ item: item, repoClick: () => this.onClickRepo(item), commitClick: () => this.onClickCommit(item), pullClick: () => this.onClickPull(item), issueClick: () => this.onClickIssue(item)})
+                EventItem({ item: item, repoClick: () => this.onClickRepo(item), commitClick: () => this.onClickCommit(item), pullClick: () => this.onClickPull(item), issueClick: () => this.onClickIssue(item), avatarClick: () => this.onClickAvatar(item)})
               }, (item: EventModel) => item.id.toString())
             }
             .scrollBar(BarState.Off)

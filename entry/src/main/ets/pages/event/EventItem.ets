@@ -27,6 +27,10 @@ export struct EventItem {
 
   }
 
+  avatarClick: (item: EventModel) => void = () => {
+
+  }
+
   @Builder
   repoBuilder(){
     Span(this.item.repo.human_name)
@@ -59,6 +63,9 @@ export struct EventItem {
       Image(this.item?.actor.avatar_url)
         .width(50)
         .borderRadius(25)
+        .onClick(() => {
+          this.avatarClick(this.item)
+        })
       Text(){
         Span(this.item?.actor.name)
         Span(' ')
@@ -124,17 +131,29 @@ export struct EventItem {
             })
         }else if (this.item?.type == 'PullRequestCommentEvent'){
           Span('发表了新的Pull Request评论')
-        }else if (this.item?.type == 'IssueEvent'){
           Span(' ')
-          Span(this.item.payload.action)
-          Span(' 了 ')
           this.repoBuilder()
-          Span(' 的Issue ')
-          Span(this.item.payload.title)
+          Span(' 的PullRequest ')
+          Span(this.item.payload.pull_request.title)
             .fontColor($r('app.color.accent'))
             .onClick(() =>{
-              this.issueClick(this.item)
+              this.pullClick(this.item)
             })
+          Span(' 的')
+          Span(this.item.payload.comment.body)
+        }else if (this.item?.type == 'IssueEvent'){
+          if (this.item.payload != null) {
+            Span(' ')
+            Span(this.item.payload.action)
+            Span(' 了 ')
+            this.repoBuilder()
+            Span(' 的Issue ')
+            Span(this.item.payload.title)
+              .fontColor($r('app.color.accent'))
+              .onClick(() =>{
+                this.issueClick(this.item)
+              })
+          }
         }
       }
       .width('calc(100% - 70vp)')

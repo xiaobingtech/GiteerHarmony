@@ -8,7 +8,7 @@ import { UserItem } from '../search/UserItem'
 export class UserListParam {
   isMe: boolean = false
   type: string = ''
-  login: string|undefined = ''
+  login: string|null = ''
 }
 
 @Builder

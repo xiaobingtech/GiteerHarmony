@@ -81,7 +81,7 @@ export struct MeView{
               if (this.derivedStack) {
                 let param = new UserListParam()
                 param.isMe = true
-                param.type = 'followers'
+                param.type = 'following'
                 this.derivedStack.pushPath({name: 'UserListView', param: param})
               }
             })
@@ -97,7 +97,7 @@ export struct MeView{
               if (this.derivedStack) {
                 let param = new UserListParam()
                 param.isMe = true
-                param.type = 'following'
+                param.type = 'followers'
                 this.derivedStack.pushPath({name: 'UserListView', param: param})
               }
             })
@@ -121,15 +121,17 @@ export struct MeView{
           .height(44)
           .padding(15)
           Divider()
-          Row(){
-            Text(this.item?.email)
-            Blank()
-            SymbolGlyph($r('sys.symbol.chevron_right'))
+          if (this.item?.email != '') {
+            Row(){
+              Text(this.item?.email)
+              Blank()
+              SymbolGlyph($r('sys.symbol.chevron_right'))
+            }
+            .width('100%')
+            .height(44)
+            .padding(15)
+            Divider()
           }
-          .width('100%')
-          .height(44)
-          .padding(15)
-          Divider()
           Row(){
             Text('设置')
             Blank()

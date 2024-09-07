@@ -26,15 +26,15 @@ struct TabPage {
       Column({space: 5}){
         SymbolGlyph(index == this.selectIndex ? $r(sel_img) : $r(img))
           .fontSize(30)
-          .fontColor(index == this.selectIndex ? [Color.Blue] : [Color.Gray])
-        Text(title).fontColor(index == this.selectIndex ? Color.Blue : Color.Black)
+          .fontColor(index == this.selectIndex ? [$r('app.color.accent')] : [Color.Gray])
+        Text(title).fontColor(index == this.selectIndex ? $r('app.color.accent') : Color.Gray)
       }
     }else{
       Row({space: 5}){
         SymbolGlyph(index == this.selectIndex ? $r(sel_img) : $r(img))
           .fontSize(30)
-          .fontColor(index == this.selectIndex ? [Color.Blue] : [Color.Gray])
-        Text(title).fontColor(index == this.selectIndex ? Color.Blue : Color.Black)
+          .fontColor(index == this.selectIndex ? [$r('app.color.accent')] : [Color.Gray])
+        Text(title).fontColor(index == this.selectIndex ? $r('app.color.accent') : Color.Gray)
       }
     }
   }
