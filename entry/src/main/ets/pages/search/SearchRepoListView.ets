@@ -7,6 +7,7 @@ import { preferences } from '@kit.ArkData'
 import { efRcpClientApi } from '@yunkss/ef_rcp'
 import { promptAction } from '@kit.ArkUI'
 import { RepoModel } from '../../model/RepoModel'
+import { EmptyListView } from '../../common/EmptyListView'
 
 @Component
 export struct SearchRepoListView{
@@ -27,8 +28,10 @@ export struct SearchRepoListView{
   }
 
   build() {
-    Row() {
-      Column() {
+    Column() {
+      if (!this.isRefreshing && this.repos.length == 0 && this.q.length){
+        EmptyListView({retryClick: () => this.headerRefresh()})
+      }else{
         Refresh({refreshing:$$this.isRefreshing}){
           List(){
             ForEach(this.repos, (item: UserModel) => {
@@ -43,8 +46,6 @@ export struct SearchRepoListView{
           .scrollBar(BarState.Off)
           .divider({ strokeWidth: 1, color: 0xFAFAFA, startMargin: 0, endMargin: 0 }) // 每行之间的分界线
           .edgeEffect(EdgeEffect.Spring) // 边缘效果设置为Spring
-          .width('100%')
-          .height('100%')
           .onReachEnd(() =>{
             this.footerRefresh()
           })
@@ -60,13 +61,13 @@ export struct SearchRepoListView{
     .height('100%')
   }
 
-  headerRefresh(){
+  headerRefresh():void{
     this.page = 1
     this.getRepos()
   }
 
   footerRefresh(){
-    if (this.isFooterRefreshing || this.repos.length < 100) {
+    if (this.isFooterRefreshing || this.repos.length < 20) {
       return
     }
     this.isFooterRefreshing = true

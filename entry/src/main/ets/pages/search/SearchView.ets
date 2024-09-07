@@ -9,24 +9,22 @@ export struct SearchView {
 
   build() {
     Navigation(){
-      Row(){
-        Column(){
-          Search({
-            placeholder: '请输入搜索内容',
-            controller: this.controller
+      Column(){
+        Search({
+          placeholder: '请输入搜索内容',
+          controller: this.controller
+        })
+          .onSubmit((value) => {
+            this.q = value
           })
-            .onSubmit((value) => {
-              this.q = value
-            })
-            .margin(15)
-          Tabs(){
-            TabContent(){
-              SearchRepoListView({q: this.q})
-            }.tabBar('仓库')
-            TabContent(){
-              SearchUserListView({q: this.q})
-            }.tabBar('用户')
-          }
+          .margin(15)
+        Tabs(){
+          TabContent(){
+            SearchRepoListView({q: this.q})
+          }.tabBar('仓库')
+          TabContent(){
+            SearchUserListView({q: this.q})
+          }.tabBar('用户')
         }
       }
     }

@@ -6,6 +6,7 @@ import { BusinessError } from '@kit.BasicServicesKit'
 import { preferences } from '@kit.ArkData'
 import { efRcpClientApi } from '@yunkss/ef_rcp'
 import { promptAction } from '@kit.ArkUI'
+import { EmptyListView } from '../../common/EmptyListView'
 
 @Component
 export struct SearchUserListView{
@@ -26,8 +27,10 @@ export struct SearchUserListView{
   }
 
   build() {
-    Row() {
-      Column() {
+    Column() {
+      if (!this.isRefreshing && this.users.length == 0 && this.q.length){
+        EmptyListView({retryClick: () => this.headerRefresh()})
+      }else{
         Refresh({refreshing:$$this.isRefreshing}){
           List(){
             ForEach(this.users, (item: UserModel) => {
@@ -42,8 +45,6 @@ export struct SearchUserListView{
           .scrollBar(BarState.Off)
           .divider({ strokeWidth: 1, color: 0xFAFAFA, startMargin: 0, endMargin: 0 }) // 每行之间的分界线
           .edgeEffect(EdgeEffect.Spring) // 边缘效果设置为Spring
-          .width('100%')
-          .height('100%')
           .onReachEnd(() =>{
             this.footerRefresh()
           })
@@ -59,13 +60,13 @@ export struct SearchUserListView{
     .height('100%')
   }
 
-  headerRefresh(){
+  headerRefresh():void{
     this.page = 1
     this.getUsers()
   }
 
   footerRefresh(){
-    if (this.isFooterRefreshing || this.users.length < 100) {
+    if (this.isFooterRefreshing || this.users.length < 20) {
       return
     }
     this.isFooterRefreshing = true
