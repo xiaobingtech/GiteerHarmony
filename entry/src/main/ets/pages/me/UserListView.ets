@@ -57,6 +57,8 @@ export struct UserListView{
                   })
               }, (item: UserModel) => item.name)
             }
+            .width('100%')
+            .height('100%')
             .scrollBar(BarState.Off)
             .divider({ strokeWidth: 1, color: 0xFAFAFA, startMargin: 0, endMargin: 0 }) // 每行之间的分界线
             .edgeEffect(EdgeEffect.Spring) // 边缘效果设置为Spring

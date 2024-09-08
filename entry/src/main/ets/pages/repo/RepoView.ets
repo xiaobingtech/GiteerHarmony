@@ -104,7 +104,7 @@ export struct RepoView {
             .padding(15)
             Divider()
             Row(){
-              Text('Commit')
+              Text('提交')
               Blank()
               SymbolGlyph($r('sys.symbol.chevron_right'))
             }
@@ -148,9 +148,12 @@ export struct RepoView {
             .padding(15)
             Divider()
             Row(){
-              Text('Branch')
+              Text('分支')
               Blank()
               Text(this.ref)
+                .textAlign(TextAlign.End)
+                .maxLines(1)
+                .layoutWeight(1)
               Blank().width(10)
               SymbolGlyph($r('sys.symbol.chevron_right'))
             }

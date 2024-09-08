@@ -14,15 +14,15 @@ export struct PersonalTokenDialog {
   build() {
     Column() {
       Text('隐私声明：Giteer不会从您的Gitee账号收集任何信息，请您放心使用，如果需要访问私有仓库请点击底部登录按钮进行OAuth授权').margin({
-        top: 10,
-        bottom: 10
+        top: 15,
+        bottom: 15
       })
       TextInput({ placeholder: '请输入私人令牌', text: this.textValue }).height(40).width('100%')
         .onChange((value: string) => {
           this.textValue = value
         })
         .margin({
-          bottom: 10
+          bottom: 15
         })
       Flex({ justifyContent: FlexAlign.SpaceAround }) {
         Button('取消')
@@ -43,7 +43,7 @@ export struct PersonalTokenDialog {
           .layoutWeight(1)
       }
     }.borderRadius(10)
-    .padding(10)
+    .padding(15)
     // 如果需要使用border属性或cornerRadius属性，请和borderRadius属性一起使用。
   }
 }
