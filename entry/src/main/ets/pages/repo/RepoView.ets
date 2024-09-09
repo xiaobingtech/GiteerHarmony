@@ -219,12 +219,12 @@ export struct RepoView {
   aboutToAppear(): void {
     mdRegister.HandleHyperlink = (url: string) => {
       console.log('当前Markdown点击URL', url)
-      let ret = this.extractGiteeRepo(url)
-      if (ret == null) {
+      // let ret = this.extractGiteeRepo(url)
+      // if (ret == null) {
         this.derivedStack?.pushPath({name: 'WebView', param: url})
-      }else {
-        this.derivedStack?.pushPath({name: 'RepoView', param: ret})
-      }
+      // }else {
+      //   this.derivedStack?.pushPath({name: 'RepoView', param: ret})
+      // }
     }
     mdRegister.HandleImage = (url: string) => {
       console.log('当前Markdown点击图像', url)
