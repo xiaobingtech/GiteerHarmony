@@ -86,7 +86,7 @@ export struct IssueSubView {
 
   async getIssues() {
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
-    let url = `https://gitee.com/api/v5/repos/${this.name}/issues?access_token=${tokenData.getSync('access_token', '')}&per_page=100&page=${this.page}&state=${this.state}`
+    let url = `api/v5/repos/${this.name}/issues?access_token=${tokenData.getSync('access_token', '')}&per_page=100&page=${this.page}&state=${this.state}`
     let response = await efRcpClientApi.get<Array<IssueModel>>({
       url: url
     })

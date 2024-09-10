@@ -91,7 +91,7 @@ struct CommitView{
 
   async getCommits() {
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
-    let url = `https://gitee.com/api/v5/repos/${this.name}/commits?access_token=${tokenData.getSync('access_token', '')}&per_page=100&page=${this.page}`
+    let url = `api/v5/repos/${this.name}/commits?access_token=${tokenData.getSync('access_token', '')}&per_page=100&page=${this.page}`
     let response = await efRcpClientApi.get<Array<CommitModel>>({
       url: url
     })

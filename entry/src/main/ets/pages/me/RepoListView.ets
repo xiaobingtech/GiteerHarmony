@@ -97,7 +97,7 @@ export struct RepoListView{
   async getRepos() {
     let userData = preferences.getPreferencesSync(getContext(this), { name: 'user.db' })
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
-    let url = `https://gitee.com/api/v5/users/${this.param?.isMe ? userData.getSync('login', '') : this.param?.login}/${this.param?.type}?access_token=${tokenData.getSync('access_token', '')}&perpage=100&direction=desc&page=${this.page}`
+    let url = `api/v5/users/${this.param?.isMe ? userData.getSync('login', '') : this.param?.login}/${this.param?.type}?access_token=${tokenData.getSync('access_token', '')}&perpage=100&direction=desc&page=${this.page}`
     let response = await efRcpClientApi.get<Array<RepoModel>>({
       url: url
     })

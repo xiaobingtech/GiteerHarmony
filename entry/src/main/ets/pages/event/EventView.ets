@@ -36,7 +36,7 @@ export struct EventView{
 
   onClickCommit(item: EventModel): void {
     // https://gitee.com/harmonyos_codelabs/car-kit-codelab-arkts/commit/169ccb181c0d8a67dc69f774faf13a22fefd8555
-    let url = `https://gitee.com/${item.repo.full_name}/commit/${item.payload.commits[0].sha}`
+    let url = `${item.repo.full_name}/commit/${item.payload.commits[0].sha}`
     if (this.derivedStack != null) {
       if (this.derivedStack.size() == 0) {
         this.derivedStack.pushPath({name: 'WebView', param: url})
@@ -67,7 +67,7 @@ export struct EventView{
     if (number == null) {
       number = item.payload.issue.number
     }
-    let url = `https://gitee.com/${item.repo.full_name}/issues/${number}`
+    let url = `${item.repo.full_name}/issues/${number}`
     if (this.derivedStack != null) {
       if (this.derivedStack.size() == 0) {
         this.derivedStack.pushPath({name: 'WebView', param: url})
@@ -144,7 +144,7 @@ export struct EventView{
   async getEvents() {
     let userData = preferences.getPreferencesSync(getContext(this), { name: 'user.db' })
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
-    let url = `https://gitee.com/api/v5/users/${userData.getSync('login', '')}/received_events?access_token=${tokenData.getSync('access_token', '')}&limit=100`
+    let url = `api/v5/users/${userData.getSync('login', '')}/received_events?access_token=${tokenData.getSync('access_token', '')}&limit=100`
     if (this.prev_id != 0) {
       url = url +`&prev_id=${this.prev_id}`
     }

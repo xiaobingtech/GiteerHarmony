@@ -106,9 +106,9 @@ export struct UserListView{
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
     let prefix = ''
     if (this.param?.isMe) {
-      prefix = `https://gitee.com/api/v5/user/${this.param?.type}`
+      prefix = `api/v5/user/${this.param?.type}`
     }else{
-      prefix = `https://gitee.com/api/v5/users/${this.param?.login}/${this.param?.type}`
+      prefix = `api/v5/users/${this.param?.login}/${this.param?.type}`
     }
     let url = `${prefix}?access_token=${tokenData.getSync('access_token', '')}&perpage=100&page=${this.page}`
     let response = await efRcpClientApi.get<Array<UserModel>>({

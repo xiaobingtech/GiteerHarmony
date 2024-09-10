@@ -86,7 +86,7 @@ export struct TrendSubView{
   }
 
   async getProjects() {
-    let url = `https://gitee.com/api/v3/projects/${this.type}?page=${this.page}`
+    let url = `api/v3/projects/${this.type}?page=${this.page}`
     let response = await efRcpClientApi.get<Array<RepoModel>>({
       url: url
     })

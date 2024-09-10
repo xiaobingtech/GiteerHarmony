@@ -108,7 +108,7 @@ export struct RepoFolderView {
 
   async getContents() {
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
-    let url = `https://gitee.com/api/v5/repos/${this.name}/contents/${this.path}?access_token=${tokenData.getSync('access_token', '')}&ref=${this.ref}`
+    let url = `api/v5/repos/${this.name}/contents/${this.path}?access_token=${tokenData.getSync('access_token', '')}&ref=${this.ref}`
     let response = await efRcpClientApi.get<Array<RepoTreeModel>>({
       url: url
     })

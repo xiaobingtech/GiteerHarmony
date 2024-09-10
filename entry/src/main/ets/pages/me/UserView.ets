@@ -160,7 +160,7 @@ export struct UserView{
 
   async getUser() {
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
-    let url = `https://gitee.com/api/v5/users/${this.login}?access_token=${tokenData.getSync('access_token', '')}`
+    let url = `api/v5/users/${this.login}?access_token=${tokenData.getSync('access_token', '')}`
     let response = await efRcpClientApi.get<UserModel>({
       url: url
     })

@@ -38,7 +38,7 @@ export struct RepoView {
     .padding(15)
     .onClick(async () => {
       let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
-      let url = `https://gitee.com/api/v5/user/starred/${this.item?.full_name}?access_token=${tokenData.getSync('access_token', '')}`
+      let url = `api/v5/user/starred/${this.item?.full_name}?access_token=${tokenData.getSync('access_token', '')}`
       let response: EfRcpResponse<RepoModel>|null = null
       if (this.item?.stared) {
         response = await efRcpClientApi.put<RepoModel>({
@@ -237,7 +237,7 @@ export struct RepoView {
 
   async getRepo() {
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
-    let url = `https://gitee.com/api/v5/repos/${this.name}?access_token=${tokenData.getSync('access_token', '')}`
+    let url = `api/v5/repos/${this.name}?access_token=${tokenData.getSync('access_token', '')}`
     let response = await efRcpClientApi.get<RepoModel>({
       url: url
     })
@@ -254,7 +254,7 @@ export struct RepoView {
 
   async getRepoReadme() {
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
-    let url = `https://gitee.com/api/v5/repos/${this.name}/readme?access_token=${tokenData.getSync('access_token', '')}&ref=${this.ref}`
+    let url = `api/v5/repos/${this.name}/readme?access_token=${tokenData.getSync('access_token', '')}&ref=${this.ref}`
     let response = await efRcpClientApi.get<ReadmeModel>({
       url: url
     })
@@ -289,7 +289,7 @@ export struct RepoView {
   async getRepoBranch() {
 
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
-    let url = `https://gitee.com/api/v5/repos/${this.name}/branches?access_token=${tokenData.getSync('access_token', '')}`
+    let url = `api/v5/repos/${this.name}/branches?access_token=${tokenData.getSync('access_token', '')}`
     let response = await efRcpClientApi.get<Array<BranchModel>>({
       url: url
     })

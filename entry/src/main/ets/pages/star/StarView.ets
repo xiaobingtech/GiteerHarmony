@@ -89,7 +89,7 @@ export struct StarView{
   async getStars() {
     let userData = preferences.getPreferencesSync(getContext(this), { name: 'user.db' })
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
-    let url = `https://gitee.com/api/v5/users/${userData.getSync('login', '')}/starred?access_token=${tokenData.getSync('access_token', '')}&perpage=100&sort=created&direction=desc&page=${this.page}`
+    let url = `api/v5/users/${userData.getSync('login', '')}/starred?access_token=${tokenData.getSync('access_token', '')}&perpage=100&sort=created&direction=desc&page=${this.page}`
     let response = await efRcpClientApi.get<Array<RepoModel>>({
       url: url
     })

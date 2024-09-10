@@ -80,7 +80,7 @@ export struct MsgView{
 
   async getMsgs() {
     let tokenData = preferences.getPreferencesSync(getContext(this), { name: 'token.db' })
-    let url = `https://gitee.com/api/v5/notifications/messages?access_token=${tokenData.getSync('access_token', '')}&per_page=100&page=${this.page}`
+    let url = `api/v5/notifications/messages?access_token=${tokenData.getSync('access_token', '')}&per_page=100&page=${this.page}`
     let response = await efRcpClientApi.get<MsgModel>({
       url: url
     })
