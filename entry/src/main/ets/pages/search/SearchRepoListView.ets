@@ -17,7 +17,7 @@ export struct SearchRepoListView{
   @State isRefreshing: boolean = false
   @State isFooterRefreshing:boolean = false
 
-  @Prop @Watch('getRepos') q:string
+  @Prop @Watch('headerRefresh') q:string
 
   @State repos: Array<RepoModel> = []
 

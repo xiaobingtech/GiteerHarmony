@@ -26,6 +26,7 @@ export struct SearchView {
             SearchUserListView({q: this.q})
           }.tabBar('用户')
         }
+        .height('calc(100% - 70vp)')
       }
     }
     .title('搜索')

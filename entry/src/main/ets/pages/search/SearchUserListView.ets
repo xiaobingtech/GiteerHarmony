@@ -16,7 +16,7 @@ export struct SearchUserListView{
   @State isRefreshing: boolean = false
   @State isFooterRefreshing:boolean = false
 
-  @Prop @Watch('getUsers') q:string
+  @Prop @Watch('headerRefresh') q:string
 
   @State users: Array<UserModel> = []
 
