@@ -52,7 +52,7 @@ export struct UserListView{
                 UserItem({ item: item })
                   .onClick(() => {
                     if (this.derivedStack != null) {
-                      this.derivedStack.pushPath({name: 'UserView', param: item})
+                      this.derivedStack.pushPath({name: 'UserView', param: item.login})
                     }
                   })
               }, (item: UserModel) => item.name)
