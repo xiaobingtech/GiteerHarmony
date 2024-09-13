@@ -80,6 +80,8 @@ export struct RepoFolderView {
                       })
                     }else if (suffix == 'mp4') {
                       this.derivedStack?.pushPath({name:'VideoView', param: result})
+                    }else if (suffix == 'md') {
+                      this.derivedStack?.pushPath({name: 'MarkdownView', param: result})
                     }
                   }
                 })

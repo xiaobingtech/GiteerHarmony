@@ -64,6 +64,11 @@
       "name": "RepoFolderView",
       "pageSourceFile": "src/main/ets/pages/repo/RepoFolderView.ets",
       "buildFunction": "RepoFolderViewBuilder"
+    },
+    {
+      "name": "MarkdownView",
+      "pageSourceFile": "src/main/ets/pages/repo/MarkdownView.ets",
+      "buildFunction": "MarkdownViewBuilder"
     }
   ]
 }
